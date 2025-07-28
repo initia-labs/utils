@@ -1,0 +1,230 @@
+import BigNumber from "bignumber.js";
+import {
+  formatNumber,
+  formatAmount,
+  toBaseUnit,
+  fromBaseUnit,
+  formatPercent,
+} from "./format";
+
+describe("formatNumber", () => {
+  it("formats basic numbers", () => {
+    expect(formatNumber("1234.567")).toBe("1,234.56");
+    expect(formatNumber("1234.567", { dp: 3 })).toBe("1,234.567");
+    expect(formatNumber("1234.567", { dp: 0 })).toBe("1,234");
+    expect(formatNumber("0")).toBe("0");
+  });
+
+  it("handles negative numbers", () => {
+    expect(formatNumber("-1234.567")).toBe("-1,234.56");
+    expect(formatNumber("-0.123")).toBe("-0.12");
+    expect(formatNumber("-999999.99")).toBe("-999,999.99");
+  });
+
+  it("handles abbreviations", () => {
+    expect(formatNumber("1234", { abbr: true })).toBe("1.23K");
+    expect(formatNumber("1234567", { abbr: true })).toBe("1.23M");
+    expect(formatNumber("1234567890", { abbr: true })).toBe("1.23B");
+    expect(formatNumber("1234567890123", { abbr: true })).toBe("1.23T");
+    expect(formatNumber("999", { abbr: true })).toBe("999");
+  });
+
+  it("handles abbreviations with negative numbers", () => {
+    expect(formatNumber("-1234", { abbr: true })).toBe("-1.23K");
+    expect(formatNumber("-1234567", { abbr: true })).toBe("-1.23M");
+    expect(formatNumber("-1234567890", { abbr: true })).toBe("-1.23B");
+    expect(formatNumber("-1234567890123", { abbr: true })).toBe("-1.23T");
+  });
+
+  it("handles abbreviations with custom decimal places", () => {
+    expect(formatNumber("1234", { abbr: true, dp: 0 })).toBe("1K");
+    expect(formatNumber("1234", { abbr: true, dp: 3 })).toBe("1.234K");
+    expect(formatNumber("1500000", { abbr: true, dp: 1 })).toBe("1.5M");
+  });
+
+  it("handles BigNumber input", () => {
+    expect(formatNumber(new BigNumber("1234.567"))).toBe("1,234.56");
+    expect(formatNumber(new BigNumber("-1234.567"))).toBe("-1,234.56");
+  });
+
+  it("handles invalid values", () => {
+    expect(formatNumber("invalid")).toBe("0");
+    expect(formatNumber(NaN)).toBe("0");
+    expect(formatNumber(Infinity)).toBe("0");
+    expect(formatNumber(-Infinity)).toBe("0");
+  });
+
+  it("handles undefined values", () => {
+    expect(formatNumber(undefined)).toBe("0");
+    expect(formatNumber()).toBe("0");
+  });
+});
+
+describe("formatAmount", () => {
+  it("formats amounts with decimals", () => {
+    expect(formatAmount("1234567890", { decimals: 6 })).toBe("1,234.567890");
+    expect(formatAmount("1234567890", { decimals: 6, dp: 3 })).toBe(
+      "1,234.567",
+    );
+    expect(formatAmount("1000000", { decimals: 6 })).toBe("1.000000");
+  });
+
+  it("handles negative amounts", () => {
+    expect(formatAmount("-1234567890", { decimals: 6 })).toBe("-1,234.567890");
+    expect(formatAmount("-1000000", { decimals: 6 })).toBe("-1.000000");
+  });
+
+  it("handles zero decimals", () => {
+    expect(formatAmount("1234567890", { decimals: 0 })).toBe("1,234,567,890");
+  });
+
+  it("handles falsy values", () => {
+    expect(formatAmount()).toBe("0");
+    expect(formatAmount(null as unknown as string)).toBe("0");
+    expect(formatAmount(undefined)).toBe("0");
+    expect(formatAmount("")).toBe("0");
+    expect(formatAmount(0)).toBe("0");
+  });
+
+  it("auto-calculates dp", () => {
+    expect(formatAmount("1234567890123456", { decimals: 18 })).toBe("0.001234");
+    expect(formatAmount("1234567890123456789012", { decimals: 18 })).toBe(
+      "1,234.567890",
+    );
+  });
+
+  it("handles abbreviations", () => {
+    expect(formatAmount("1234567890", { decimals: 6, abbr: true })).toBe(
+      "1.234567K",
+    );
+    expect(formatAmount("1234567890000", { decimals: 6, abbr: true })).toBe(
+      "1.234567M",
+    );
+    expect(formatAmount("1234567890000000", { decimals: 6, abbr: true })).toBe(
+      "1.234567B",
+    );
+    expect(
+      formatAmount("1234567890000000000", { decimals: 6, abbr: true }),
+    ).toBe("1.234567T");
+  });
+
+  it("handles abbreviations with custom dp", () => {
+    expect(formatAmount("1234567890", { decimals: 6, abbr: true, dp: 3 })).toBe(
+      "1.234K",
+    );
+    expect(
+      formatAmount("1234567890000", { decimals: 6, abbr: true, dp: 0 }),
+    ).toBe("1M");
+  });
+
+  it("handles negative abbreviations", () => {
+    expect(formatAmount("-1234567890", { decimals: 6, abbr: true })).toBe(
+      "-1.234567K",
+    );
+    expect(formatAmount("-1234567890000000", { decimals: 6, abbr: true })).toBe(
+      "-1.234567B",
+    );
+  });
+});
+
+describe("fromBaseUnit", () => {
+  it("converts from base unit", () => {
+    expect(fromBaseUnit("1234567890", 6)).toBe("1234.567890");
+    expect(fromBaseUnit("1234567890", 0)).toBe("1234567890");
+    expect(fromBaseUnit("1000000", 6)).toBe("1.000000");
+  });
+
+  it("handles negative values", () => {
+    expect(fromBaseUnit("-1234567890", 6)).toBe("-1234.567890");
+    expect(fromBaseUnit("-1000000", 6)).toBe("-1.000000");
+  });
+
+  it("limits decimal places", () => {
+    expect(fromBaseUnit("1234567890123456789", 18)).toBe("1.234567");
+    expect(fromBaseUnit("1", 10)).toBe("0.000000");
+  });
+
+  it("handles invalid values", () => {
+    expect(fromBaseUnit("", 6)).toBe("0");
+    expect(fromBaseUnit("invalid", 6)).toBe("0");
+    expect(fromBaseUnit(NaN, 6)).toBe("0");
+  });
+
+  it("handles undefined values", () => {
+    expect(fromBaseUnit(undefined, 6)).toBe("0");
+    expect(fromBaseUnit()).toBe("0");
+  });
+});
+
+describe("toBaseUnit", () => {
+  it("converts to base unit", () => {
+    expect(toBaseUnit("1.5", 6)).toBe("1500000");
+    expect(toBaseUnit("1234.56789")).toBe("1234567890");
+    expect(toBaseUnit("0.000001", 6)).toBe("1");
+  });
+
+  it("handles negative values", () => {
+    expect(toBaseUnit("-1.5", 6)).toBe("-1500000");
+    expect(toBaseUnit("-1234.56789")).toBe("-1234567890");
+    expect(toBaseUnit("-0.000001", 6)).toBe("-1");
+  });
+
+  it("handles zero decimals", () => {
+    expect(toBaseUnit("1234.567", 0)).toBe("1234");
+    expect(toBaseUnit("1234.9", 0)).toBe("1234");
+  });
+
+  it("handles invalid values", () => {
+    expect(toBaseUnit("", 6)).toBe("0");
+    expect(toBaseUnit("invalid", 6)).toBe("0");
+    expect(toBaseUnit(NaN, 6)).toBe("0");
+  });
+
+  it("handles undefined values", () => {
+    expect(toBaseUnit(undefined, 6)).toBe("0");
+    expect(toBaseUnit()).toBe("0");
+  });
+
+  it("rounds down fractional amounts", () => {
+    expect(toBaseUnit("1.9999999", 6)).toBe("1999999");
+    expect(toBaseUnit("1.9999999999", 6)).toBe("1999999");
+  });
+});
+
+describe("formatPercent", () => {
+  it("formats percentages", () => {
+    expect(formatPercent("0.123")).toBe("12.30%");
+    expect(formatPercent("1.23")).toBe("123%");
+    expect(formatPercent("0.1234567", 3)).toBe("12.345%");
+    expect(formatPercent("0.05")).toBe("5.00%");
+  });
+
+  it("handles negative percentages", () => {
+    expect(formatPercent("-0.123")).toBe("-12.30%");
+    expect(formatPercent("-1.23")).toBe("-123.00%");
+    expect(formatPercent("-0.05")).toBe("-5.00%");
+  });
+
+  it("handles fixed decimal places", () => {
+    expect(formatPercent("0.1234567", 0)).toBe("12%");
+    expect(formatPercent("0.1234567", 1)).toBe("12.3%");
+    expect(formatPercent("0.1234567", 5)).toBe("12.34567%");
+  });
+
+  it("auto-adjusts decimal places", () => {
+    expect(formatPercent("1")).toBe("100%");
+    expect(formatPercent("2.5")).toBe("250%");
+    expect(formatPercent("0.99")).toBe("99.00%");
+  });
+
+  it("handles invalid values", () => {
+    expect(formatPercent("")).toBe("0%");
+    expect(formatPercent("invalid")).toBe("0%");
+    expect(formatPercent(NaN)).toBe("0%");
+  });
+
+  it("handles undefined values", () => {
+    expect(formatPercent(undefined)).toBe("0%");
+    expect(formatPercent()).toBe("0%");
+  });
+});
