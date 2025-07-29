@@ -90,6 +90,15 @@ describe("formatNumber", () => {
       "1.00M",
     );
   });
+
+  it("handles bigint values", () => {
+    expect(formatNumber(BigInt(1234))).toBe("1,234");
+    expect(formatNumber(BigInt(-5678))).toBe("-5,678");
+    expect(formatNumber(BigInt(1234567), { abbr: true })).toBe("1.23M");
+    expect(formatNumber(BigInt("9007199254740993"))).toBe(
+      "9,007,199,254,740,993",
+    );
+  });
 });
 
 describe("formatAmount", () => {
@@ -166,6 +175,16 @@ describe("formatAmount", () => {
       "-1.234567B",
     );
   });
+
+  it("handles bigint values", () => {
+    expect(formatAmount(BigInt("1234567890"), { decimals: 6 })).toBe(
+      "1,234.567890",
+    );
+    expect(formatAmount(BigInt("-1000000"), { decimals: 6 })).toBe("-1.000000");
+    expect(
+      formatAmount(BigInt("1234567890000"), { decimals: 6, abbr: true }),
+    ).toBe("1.234567M");
+  });
 });
 
 describe("fromBaseUnit", () => {
@@ -203,6 +222,16 @@ describe("fromBaseUnit", () => {
     expect(fromBaseUnit("", { decimals: 6, fallback: "0" })).toBe("0");
     expect(fromBaseUnit("invalid", { decimals: 6, fallback: "N/A" })).toBe(
       "N/A",
+    );
+  });
+
+  it("handles bigint values", () => {
+    expect(fromBaseUnit(BigInt("1234567890"), { decimals: 6 })).toBe(
+      "1234.567890",
+    );
+    expect(fromBaseUnit(BigInt("-1000000"), { decimals: 6 })).toBe("-1.000000");
+    expect(fromBaseUnit(BigInt("1234567890123456789"), { decimals: 18 })).toBe(
+      "1.234567",
     );
   });
 });
@@ -250,6 +279,12 @@ describe("toBaseUnit", () => {
   it("rounds down fractional amounts", () => {
     expect(toBaseUnit("1.9999999", { decimals: 6 })).toBe("1999999");
     expect(toBaseUnit("1.9999999999", { decimals: 6 })).toBe("1999999");
+  });
+
+  it("handles bigint values", () => {
+    expect(toBaseUnit(BigInt(1500), { decimals: 3 })).toBe("1500000");
+    expect(toBaseUnit(BigInt(-1234), { decimals: 6 })).toBe("-1234000000");
+    expect(toBaseUnit(BigInt(0), { decimals: 18 })).toBe("0");
   });
 });
 
@@ -328,5 +363,11 @@ describe("formatPercent", () => {
     expect(formatPercent("0.1")).toBe("10.00%");
     expect(formatPercent("0.999")).toBe("99.90%");
     expect(formatPercent("0.001")).toBe("0.10%");
+  });
+
+  it("handles bigint values", () => {
+    expect(formatPercent(BigInt(1))).toBe("100%");
+    expect(formatPercent(BigInt(0))).toBe("0.00%");
+    expect(formatPercent(BigInt(-1))).toBe("-100.00%");
   });
 });
