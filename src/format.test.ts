@@ -2,8 +2,8 @@ import BigNumber from "bignumber.js";
 import {
   formatNumber,
   formatAmount,
-  toBaseUnit,
   fromBaseUnit,
+  toBaseUnit,
   formatPercent,
 } from "./format";
 
@@ -47,16 +47,47 @@ describe("formatNumber", () => {
     expect(formatNumber(new BigNumber("-1234.567"))).toBe("-1,234.56");
   });
 
-  it("handles invalid values", () => {
-    expect(formatNumber("invalid")).toBe("0");
-    expect(formatNumber(NaN)).toBe("0");
-    expect(formatNumber(Infinity)).toBe("0");
-    expect(formatNumber(-Infinity)).toBe("0");
+  it("handles invalid values with no fallback", () => {
+    expect(formatNumber("invalid")).toBe("");
+    expect(formatNumber(NaN)).toBe("");
+    expect(formatNumber(Infinity)).toBe("");
+    expect(formatNumber(-Infinity)).toBe("");
   });
 
-  it("handles undefined values", () => {
-    expect(formatNumber(undefined)).toBe("0");
-    expect(formatNumber()).toBe("0");
+  it("handles undefined and null values with no fallback", () => {
+    expect(formatNumber(undefined)).toBe("");
+    expect(formatNumber()).toBe("");
+    expect(formatNumber(null as unknown as string)).toBe("");
+  });
+
+  it("returns fallback for invalid values when provided", () => {
+    expect(formatNumber("invalid", { fallback: "N/A" })).toBe("N/A");
+    expect(formatNumber(NaN, { fallback: "N/A" })).toBe("N/A");
+    expect(formatNumber(Infinity, { fallback: "N/A" })).toBe("N/A");
+    expect(formatNumber(-Infinity, { fallback: "N/A" })).toBe("N/A");
+  });
+
+  it("returns fallback for null and undefined when provided", () => {
+    expect(formatNumber(undefined, { fallback: "N/A" })).toBe("N/A");
+    expect(formatNumber(null as unknown as string, { fallback: "N/A" })).toBe(
+      "N/A",
+    );
+  });
+
+  it("returns different fallback values", () => {
+    expect(formatNumber(null as unknown as string, { fallback: "-" })).toBe(
+      "-",
+    );
+    expect(formatNumber(undefined, { fallback: "No data" })).toBe("No data");
+    expect(formatNumber(NaN, { fallback: "Invalid" })).toBe("Invalid");
+  });
+
+  it("normal formatting remains unchanged for valid numbers", () => {
+    expect(formatNumber("1234.567", { fallback: "N/A" })).toBe("1,234.56");
+    expect(formatNumber("0", { fallback: "N/A" })).toBe("0");
+    expect(formatNumber("1000000", { abbr: true, fallback: "N/A" })).toBe(
+      "1.00M",
+    );
   });
 });
 
@@ -195,7 +226,7 @@ describe("formatPercent", () => {
   it("formats percentages", () => {
     expect(formatPercent("0.123")).toBe("12.30%");
     expect(formatPercent("1.23")).toBe("123%");
-    expect(formatPercent("0.1234567", 3)).toBe("12.345%");
+    expect(formatPercent("0.1234567", { dp: 3 })).toBe("12.345%");
     expect(formatPercent("0.05")).toBe("5.00%");
   });
 
@@ -206,9 +237,9 @@ describe("formatPercent", () => {
   });
 
   it("handles fixed decimal places", () => {
-    expect(formatPercent("0.1234567", 0)).toBe("12%");
-    expect(formatPercent("0.1234567", 1)).toBe("12.3%");
-    expect(formatPercent("0.1234567", 5)).toBe("12.34567%");
+    expect(formatPercent("0.1234567", { dp: 0 })).toBe("12%");
+    expect(formatPercent("0.1234567", { dp: 1 })).toBe("12.3%");
+    expect(formatPercent("0.1234567", { dp: 5 })).toBe("12.34567%");
   });
 
   it("auto-adjusts decimal places", () => {
@@ -217,14 +248,42 @@ describe("formatPercent", () => {
     expect(formatPercent("0.99")).toBe("99.00%");
   });
 
-  it("handles invalid values", () => {
-    expect(formatPercent("")).toBe("0%");
-    expect(formatPercent("invalid")).toBe("0%");
-    expect(formatPercent(NaN)).toBe("0%");
+  it("handles invalid values with no fallback", () => {
+    expect(formatPercent("")).toBe("");
+    expect(formatPercent("invalid")).toBe("");
+    expect(formatPercent(NaN)).toBe("");
   });
 
-  it("handles undefined values", () => {
-    expect(formatPercent(undefined)).toBe("0%");
-    expect(formatPercent()).toBe("0%");
+  it("handles undefined and null values with no fallback", () => {
+    expect(formatPercent(undefined)).toBe("");
+    expect(formatPercent()).toBe("");
+    expect(formatPercent(null as unknown as string)).toBe("");
+  });
+
+  it("returns fallback for invalid values when provided", () => {
+    expect(formatPercent("", { fallback: "N/A" })).toBe("N/A");
+    expect(formatPercent("invalid", { fallback: "N/A" })).toBe("N/A");
+    expect(formatPercent(NaN, { fallback: "N/A" })).toBe("N/A");
+  });
+
+  it("returns fallback for null and undefined when provided", () => {
+    expect(formatPercent(undefined, { fallback: "N/A" })).toBe("N/A");
+    expect(formatPercent(null as unknown as string, { fallback: "N/A" })).toBe(
+      "N/A",
+    );
+  });
+
+  it("returns different fallback values", () => {
+    expect(formatPercent(null as unknown as string, { fallback: "-" })).toBe(
+      "-",
+    );
+    expect(formatPercent(undefined, { fallback: "No data" })).toBe("No data");
+    expect(formatPercent(NaN, { fallback: "Invalid" })).toBe("Invalid");
+  });
+
+  it("normal percent formatting remains unchanged for valid numbers", () => {
+    expect(formatPercent("0.5", { fallback: "N/A" })).toBe("50.00%");
+    expect(formatPercent("1", { fallback: "N/A" })).toBe("100%");
+    expect(formatPercent("0.123", { fallback: "N/A", dp: 1 })).toBe("12.3%");
   });
 });
