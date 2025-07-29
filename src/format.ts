@@ -77,10 +77,10 @@ export function formatAmount(
   value?: number | string | BigNumber,
   options?: FormatAmountOptions,
 ): string {
-  const { decimals = 0, dp, abbr } = options || {};
+  const { decimals = 0, dp, abbr, fallback = "" } = options || {};
 
   const num = toBigNumber(value);
-  if (!num) return "0";
+  if (!num) return fallback;
 
   const result = num.div(getPowerOf10(decimals));
   const decimalPlaces = dp !== undefined ? dp : Math.min(decimals, 6);
@@ -94,12 +94,19 @@ export function formatAmount(
   return formatNumber(result, { dp: decimalPlaces, abbr });
 }
 
+interface FromBaseUnitOptions {
+  decimals?: number;
+  fallback?: string;
+}
+
 export function fromBaseUnit(
   value?: number | string | BigNumber,
-  decimals = 6,
+  options?: FromBaseUnitOptions,
 ): string {
+  const { decimals = 0, fallback = "" } = options || {};
+
   const num = toBigNumber(value);
-  if (!num) return "0";
+  if (!num) return fallback;
 
   const result = num.div(getPowerOf10(decimals));
   const decimalPlaces = Math.min(decimals, 6);
@@ -107,12 +114,19 @@ export function fromBaseUnit(
   return result.toFixed(decimalPlaces, BigNumber.ROUND_DOWN);
 }
 
+interface ToBaseUnitOptions {
+  decimals?: number;
+  fallback?: string;
+}
+
 export function toBaseUnit(
   value?: number | string | BigNumber,
-  decimals = 6,
+  options?: ToBaseUnitOptions,
 ): string {
+  const { decimals = 0, fallback = "" } = options || {};
+
   const num = toBigNumber(value);
-  if (!num) return "0";
+  if (!num) return fallback;
 
   const result = num.times(getPowerOf10(decimals));
   return result.integerValue(BigNumber.ROUND_DOWN).toString();

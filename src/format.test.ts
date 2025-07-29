@@ -110,11 +110,20 @@ describe("formatAmount", () => {
   });
 
   it("handles falsy values", () => {
-    expect(formatAmount()).toBe("0");
-    expect(formatAmount(null as unknown as string)).toBe("0");
-    expect(formatAmount(undefined)).toBe("0");
-    expect(formatAmount("")).toBe("0");
+    expect(formatAmount()).toBe("");
+    expect(formatAmount(null as unknown as string)).toBe("");
+    expect(formatAmount(undefined)).toBe("");
+    expect(formatAmount("")).toBe("");
     expect(formatAmount(0)).toBe("0");
+  });
+
+  it("uses custom fallback for invalid values", () => {
+    expect(formatAmount(undefined, { fallback: "0" })).toBe("0");
+    expect(formatAmount(null as unknown as string, { fallback: "0" })).toBe(
+      "0",
+    );
+    expect(formatAmount("", { fallback: "0" })).toBe("0");
+    expect(formatAmount("invalid", { fallback: "N/A" })).toBe("N/A");
   });
 
   it("auto-calculates dp", () => {
@@ -160,65 +169,86 @@ describe("formatAmount", () => {
 
 describe("fromBaseUnit", () => {
   it("converts from base unit", () => {
-    expect(fromBaseUnit("1234567890", 6)).toBe("1234.567890");
-    expect(fromBaseUnit("1234567890", 0)).toBe("1234567890");
-    expect(fromBaseUnit("1000000", 6)).toBe("1.000000");
+    expect(fromBaseUnit("1234567890", { decimals: 6 })).toBe("1234.567890");
+    expect(fromBaseUnit("1234567890", { decimals: 0 })).toBe("1234567890");
+    expect(fromBaseUnit("1000000", { decimals: 6 })).toBe("1.000000");
   });
 
   it("handles negative values", () => {
-    expect(fromBaseUnit("-1234567890", 6)).toBe("-1234.567890");
-    expect(fromBaseUnit("-1000000", 6)).toBe("-1.000000");
+    expect(fromBaseUnit("-1234567890", { decimals: 6 })).toBe("-1234.567890");
+    expect(fromBaseUnit("-1000000", { decimals: 6 })).toBe("-1.000000");
   });
 
   it("limits decimal places", () => {
-    expect(fromBaseUnit("1234567890123456789", 18)).toBe("1.234567");
-    expect(fromBaseUnit("1", 10)).toBe("0.000000");
+    expect(fromBaseUnit("1234567890123456789", { decimals: 18 })).toBe(
+      "1.234567",
+    );
+    expect(fromBaseUnit("1", { decimals: 10 })).toBe("0.000000");
   });
 
   it("handles invalid values", () => {
-    expect(fromBaseUnit("", 6)).toBe("0");
-    expect(fromBaseUnit("invalid", 6)).toBe("0");
-    expect(fromBaseUnit(NaN, 6)).toBe("0");
+    expect(fromBaseUnit("", { decimals: 6 })).toBe("");
+    expect(fromBaseUnit("invalid", { decimals: 6 })).toBe("");
+    expect(fromBaseUnit(NaN, { decimals: 6 })).toBe("");
   });
 
   it("handles undefined values", () => {
-    expect(fromBaseUnit(undefined, 6)).toBe("0");
-    expect(fromBaseUnit()).toBe("0");
+    expect(fromBaseUnit(undefined, { decimals: 6 })).toBe("");
+    expect(fromBaseUnit()).toBe("");
+  });
+
+  it("uses custom fallback for invalid values", () => {
+    expect(fromBaseUnit(undefined, { decimals: 6, fallback: "0" })).toBe("0");
+    expect(fromBaseUnit("", { decimals: 6, fallback: "0" })).toBe("0");
+    expect(fromBaseUnit("invalid", { decimals: 6, fallback: "N/A" })).toBe(
+      "N/A",
+    );
   });
 });
 
 describe("toBaseUnit", () => {
   it("converts to base unit", () => {
-    expect(toBaseUnit("1.5", 6)).toBe("1500000");
-    expect(toBaseUnit("1234.56789")).toBe("1234567890");
-    expect(toBaseUnit("0.000001", 6)).toBe("1");
+    expect(toBaseUnit("1.5", { decimals: 6 })).toBe("1500000");
+    expect(toBaseUnit("1234.56789", { decimals: 6 })).toBe("1234567890");
+    expect(toBaseUnit("0.000001", { decimals: 6 })).toBe("1");
   });
 
   it("handles negative values", () => {
-    expect(toBaseUnit("-1.5", 6)).toBe("-1500000");
-    expect(toBaseUnit("-1234.56789")).toBe("-1234567890");
-    expect(toBaseUnit("-0.000001", 6)).toBe("-1");
+    expect(toBaseUnit("-1.5", { decimals: 6 })).toBe("-1500000");
+    expect(toBaseUnit("-1234.56789", { decimals: 6 })).toBe("-1234567890");
+    expect(toBaseUnit("-0.000001", { decimals: 6 })).toBe("-1");
   });
 
   it("handles zero decimals", () => {
-    expect(toBaseUnit("1234.567", 0)).toBe("1234");
-    expect(toBaseUnit("1234.9", 0)).toBe("1234");
+    expect(toBaseUnit("1234.567", { decimals: 0 })).toBe("1234");
+    expect(toBaseUnit("1234.9", { decimals: 0 })).toBe("1234");
+  });
+
+  it("handles default decimals parameter", () => {
+    expect(toBaseUnit("1234.567")).toBe("1234");
+    expect(toBaseUnit("1234")).toBe("1234");
   });
 
   it("handles invalid values", () => {
-    expect(toBaseUnit("", 6)).toBe("0");
-    expect(toBaseUnit("invalid", 6)).toBe("0");
-    expect(toBaseUnit(NaN, 6)).toBe("0");
+    expect(toBaseUnit("", { decimals: 6 })).toBe("");
+    expect(toBaseUnit("invalid", { decimals: 6 })).toBe("");
+    expect(toBaseUnit(NaN, { decimals: 6 })).toBe("");
   });
 
   it("handles undefined values", () => {
-    expect(toBaseUnit(undefined, 6)).toBe("0");
-    expect(toBaseUnit()).toBe("0");
+    expect(toBaseUnit(undefined, { decimals: 6 })).toBe("");
+    expect(toBaseUnit()).toBe("");
+  });
+
+  it("uses custom fallback for invalid values", () => {
+    expect(toBaseUnit(undefined, { decimals: 6, fallback: "0" })).toBe("0");
+    expect(toBaseUnit("", { decimals: 6, fallback: "0" })).toBe("0");
+    expect(toBaseUnit("invalid", { decimals: 6, fallback: "N/A" })).toBe("N/A");
   });
 
   it("rounds down fractional amounts", () => {
-    expect(toBaseUnit("1.9999999", 6)).toBe("1999999");
-    expect(toBaseUnit("1.9999999999", 6)).toBe("1999999");
+    expect(toBaseUnit("1.9999999", { decimals: 6 })).toBe("1999999");
+    expect(toBaseUnit("1.9999999999", { decimals: 6 })).toBe("1999999");
   });
 });
 
@@ -285,5 +315,17 @@ describe("formatPercent", () => {
     expect(formatPercent("0.5", { fallback: "N/A" })).toBe("50.00%");
     expect(formatPercent("1", { fallback: "N/A" })).toBe("100%");
     expect(formatPercent("0.123", { fallback: "N/A", dp: 1 })).toBe("12.3%");
+  });
+
+  it("handles percentages >= 100% with no decimal places", () => {
+    expect(formatPercent("1")).toBe("100%");
+    expect(formatPercent("1.5")).toBe("150%");
+    expect(formatPercent("10")).toBe("1000%");
+  });
+
+  it("handles percentages < 100% with 2 decimal places by default", () => {
+    expect(formatPercent("0.1")).toBe("10.00%");
+    expect(formatPercent("0.999")).toBe("99.90%");
+    expect(formatPercent("0.001")).toBe("0.10%");
   });
 });
