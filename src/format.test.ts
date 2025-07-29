@@ -108,6 +108,7 @@ describe("formatAmount", () => {
       "1,234.567",
     );
     expect(formatAmount("1000000", { decimals: 6 })).toBe("1.000000");
+    expect(formatAmount("0", { decimals: 6 })).toBe("0");
   });
 
   it("handles negative amounts", () => {

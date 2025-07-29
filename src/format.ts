@@ -81,6 +81,7 @@ export function formatAmount(
 
   const num = toBigNumber(value);
   if (!num) return fallback;
+  if (num.isZero()) return "0";
 
   const result = num.div(getPowerOf10(decimals));
   const decimalPlaces = dp !== undefined ? dp : Math.min(decimals, 6);
