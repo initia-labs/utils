@@ -19,14 +19,14 @@ const ABBREVIATIONS = [
 
 // Helper function to safely convert value to BigNumber
 function toBigNumber(
-  value: number | string | BigNumber | null | undefined,
+  value: number | string | bigint | BigNumber | null | undefined,
 ): BigNumber | null {
   if (value === null || value === undefined || value === "") {
     return null;
   }
 
   try {
-    const num = new BigNumber(value);
+    const num = new BigNumber(value.toString());
     return num.isNaN() || !num.isFinite() ? null : num;
   } catch {
     return null;
@@ -46,7 +46,7 @@ function addCommas(value: string): string {
 }
 
 export function formatNumber(
-  value?: number | string | BigNumber,
+  value?: number | string | bigint | BigNumber,
   options?: FormatNumberOptions,
 ): string {
   const { dp = 2, abbr = false, fallback = "" } = options || {};
@@ -74,7 +74,7 @@ export function formatNumber(
 }
 
 export function formatAmount(
-  value?: number | string | BigNumber,
+  value?: number | string | bigint | BigNumber,
   options?: FormatAmountOptions,
 ): string {
   const { decimals = 0, dp, abbr, fallback = "" } = options || {};
@@ -100,7 +100,7 @@ interface FromBaseUnitOptions {
 }
 
 export function fromBaseUnit(
-  value?: number | string | BigNumber,
+  value?: number | string | bigint | BigNumber,
   options?: FromBaseUnitOptions,
 ): string {
   const { decimals = 0, fallback = "" } = options || {};
@@ -120,7 +120,7 @@ interface ToBaseUnitOptions {
 }
 
 export function toBaseUnit(
-  value?: number | string | BigNumber,
+  value?: number | string | bigint | BigNumber,
   options?: ToBaseUnitOptions,
 ): string {
   const { decimals = 0, fallback = "" } = options || {};
@@ -138,7 +138,7 @@ interface FormatPercentOptions {
 }
 
 export function formatPercent(
-  value?: number | string | BigNumber,
+  value?: number | string | bigint | BigNumber,
   options?: FormatPercentOptions,
 ): string {
   const { dp, fallback = "" } = options || {};
