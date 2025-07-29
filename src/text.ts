@@ -1,5 +1,5 @@
 export function truncate(
-  str: string,
+  str: string = "",
   lengths: [number, number] = [6, 6],
 ): string {
   const [prefixLength, suffixLength] = lengths;
