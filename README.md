@@ -83,18 +83,18 @@ toBaseUnit("1.9999999", { decimals: 6 }); // "1999999"
 
 ## API Reference
 
-### truncate(str, lengths?)
+### truncate(str?, lengths?)
 
 Truncates a string, keeping the beginning and end.
 
-- `str`: `string` - The string to truncate
+- `str`: `string` - The string to truncate (default: "")
 - `lengths`: `[number, number]` - Characters to keep at [start, end] (default: [6, 6])
 
 ### formatNumber(value, options?)
 
 Formats a number with thousands separators and decimal places.
 
-- `value`: `number | string | BigNumber` - The value to format
+- `value`: `number | string | bigint | BigNumber` - The value to format
 - `options.dp`: `number` - Decimal places (default: 2)
 - `options.abbr`: `boolean` - Use abbreviations (K, M, B, T) (default: false)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
@@ -103,7 +103,7 @@ Formats a number with thousands separators and decimal places.
 
 Formats a blockchain amount, converting from base units to display units.
 
-- `value`: `number | string | BigNumber` - The value in base units
+- `value`: `number | string | bigint | BigNumber` - The value in base units
 - `options.decimals`: `number` - Token decimals (default: 0)
 - `options.dp`: `number` - Decimal places (default: min(decimals, 6))
 - `options.abbr`: `boolean` - Use abbreviations (default: false)
@@ -113,7 +113,7 @@ Formats a blockchain amount, converting from base units to display units.
 
 Converts a display amount to base units.
 
-- `value`: `number | string | BigNumber` - The display amount
+- `value`: `number | string | bigint | BigNumber` - The display amount
 - `options.decimals`: `number` - Token decimals (default: 0)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 
@@ -121,7 +121,7 @@ Converts a display amount to base units.
 
 Converts base units to a display amount.
 
-- `value`: `number | string | BigNumber` - The amount in base units
+- `value`: `number | string | bigint | BigNumber` - The amount in base units
 - `options.decimals`: `number` - Token decimals (default: 0)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 
@@ -129,7 +129,7 @@ Converts base units to a display amount.
 
 Formats a decimal as a percentage.
 
-- `value`: `number | string | BigNumber` - The decimal value (0.1 = 10%)
+- `value`: `number | string | bigint | BigNumber` - The decimal value (0.1 = 10%)
 - `options.dp`: `number` - Decimal places (default: 2 for <100%, 0 for ≥100%)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 
