@@ -32,4 +32,8 @@ describe("truncate", () => {
     expect(truncate("a")).toBe("a");
     expect(truncate("ab", [1, 1])).toBe("ab");
   });
+
+  it("should use default empty string when no argument is provided", () => {
+    expect(truncate()).toBe("");
+  });
 });
