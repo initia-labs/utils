@@ -133,6 +133,98 @@ Formats a decimal as a percentage.
 - `options.dp`: `number` - Decimal places (default: 2 for <100%, 0 for ≥100%)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 
+### Address Utilities
+
+#### AddressUtils.toBytes(address, byteLength?)
+
+Converts an address to bytes.
+
+- `address`: `string` - The address to convert (required)
+- `byteLength`: `number` - Target byte length (default: 20)
+
+#### AddressUtils.toBech32(address, prefix?)
+
+Converts an address to bech32 format.
+
+- `address`: `string` - The address to convert (required)
+- `prefix`: `string` - Bech32 prefix (default: "init")
+
+#### AddressUtils.toHex(address)
+
+Converts an address to checksummed hex format.
+
+- `address`: `string` - The address to convert (required)
+
+#### AddressUtils.validate(address, prefix?)
+
+Validates an address.
+
+- `address`: `string` - The address to validate (required)
+- `prefix`: `string` - Expected bech32 prefix (default: "init")
+- Returns: `boolean` - false if address is empty, true if valid
+
+#### AddressUtils.equals(address1, address2)
+
+Compares two addresses regardless of format.
+
+- `address1`: `string` - First address (required)
+- `address2`: `string` - Second address (required)
+- Returns: `boolean` - true if addresses are equal
+
+### BCS Serialization
+
+#### bcs
+
+Extended BCS serializer that includes all standard types from `@mysten/bcs` plus:
+
+- `bcs.address()` - 32-byte address serializer
+- `bcs.object()` - Alias for address serializer
+- `bcs.fixedPoint32()` - Fixed-point number with 2^32 scaling
+- `bcs.fixedPoint64()` - Fixed-point number with 2^64 scaling
+- `bcs.decimal128()` - 128-bit decimal with 10^18 scaling
+- `bcs.decimal256()` - 256-bit decimal with 10^18 scaling
+- `bcs.bigdecimal()` - Arbitrary precision decimal
+
+#### resolveBcsType(typeStr)
+
+Resolves Move-style type strings to BCS types.
+
+- `typeStr`: `string` - Move type string (e.g., "0x1::string::String")
+- Returns: `BcsType` - Corresponding BCS type
+
+### Object Utilities
+
+#### createObjectAddress(source, seed)
+
+Creates a deterministic object address.
+
+- `source`: `string` - Source address
+- `seed`: `string` - Seed string
+- Returns: `string` - Object address (hex)
+
+#### createUserDerivedObjectAddress(source, derivedFrom)
+
+Creates a user-derived object address.
+
+- `source`: `string` - Source address
+- `derivedFrom`: `string` - Address to derive from
+- Returns: `string` - Derived object address (hex)
+
+#### getMetadata(denom)
+
+Gets the metadata address for a denomination.
+
+- `denom`: `string` - The denomination
+- Returns: `string` - Metadata address
+
+#### getIbcDenom(channelId, denom)
+
+Calculates the IBC denom hash.
+
+- `channelId`: `string` - IBC channel ID
+- `denom`: `string` - Original denomination
+- Returns: `string` - IBC denom (e.g., "ibc/HASH...")
+
 ## Development
 
 ```bash
