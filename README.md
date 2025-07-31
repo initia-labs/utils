@@ -81,6 +81,89 @@ toBaseUnit("1234.56789", { decimals: 6 }); // "1234567890"
 toBaseUnit("1.9999999", { decimals: 6 }); // "1999999"
 ```
 
+### Address Utilities
+
+```typescript
+import { AddressUtils } from "@initia/utils";
+
+// Convert between address formats
+AddressUtils.toHex("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs");
+// "0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1"
+
+AddressUtils.toBech32("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1");
+// "init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"
+
+// Validate addresses
+AddressUtils.validate("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"); // true
+AddressUtils.validate("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1"); // true
+AddressUtils.validate("invalid-address"); // false
+
+// Compare addresses (handles different formats)
+AddressUtils.equals(
+  "init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs",
+  "0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1",
+); // true
+
+// Special handling for address 0x1
+AddressUtils.toHex("0x1"); // "0x1"
+AddressUtils.toBech32("0x1"); // "init1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqr5e3d"
+```
+
+### BCS (Binary Canonical Serialization)
+
+```typescript
+import { bcs, resolveBcsType } from "@initia/utils";
+
+// Serialize addresses
+const serialized = bcs.address().serialize("0x1").toBase64();
+// "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE="
+
+// Serialize various types
+bcs.u64().serialize(123);
+bcs.string().serialize("Hello, world!");
+bcs.vector(bcs.u8()).serialize([1, 2, 3]);
+
+// Special Move types
+bcs.fixedPoint32().serialize(1.5); // Fixed-point with 2^32 scaling
+bcs.fixedPoint64().serialize(1.5); // Fixed-point with 2^64 scaling
+bcs.decimal128().serialize(1.5); // Decimal with 10^18 scaling
+bcs.bigdecimal().serialize("123.456"); // Arbitrary precision decimal
+
+// Resolve Move-style type strings dynamically
+const addressType = resolveBcsType("0x1::string::String"); // returns bcs.string()
+const optionType = resolveBcsType("0x1::option::Option<u64>"); // returns bcs.option(bcs.u64())
+```
+
+### Object Utilities
+
+```typescript
+import {
+  createObjectAddress,
+  createUserDerivedObjectAddress,
+  getMetadata,
+  getIbcDenom,
+} from "@initia/utils";
+
+// Create deterministic object addresses
+const objectAddr = createObjectAddress("0x1", "uinit");
+// "8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9"
+
+// Create user-derived object addresses
+const derivedAddr = createUserDerivedObjectAddress(
+  "0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1",
+  "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9",
+);
+// "350045f8766ac3ff7e58ee316786cf1646765f435824345bc9f79d9626c11396"
+
+// Get metadata address for denoms
+getMetadata("uinit"); // "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9"
+getMetadata("move/0x123...abc"); // "0x123...abc"
+
+// Get IBC denom hash
+getIbcDenom("channel-0", "uatom");
+// "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
+```
+
 ## API Reference
 
 ### truncate(str?, lengths?)
