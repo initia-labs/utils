@@ -20,17 +20,17 @@ export const AddressUtils = {
   },
 
   toBech32(address: string, prefix: string = "init"): string {
-    if (!address) return "";
+    if (!address) throw new Error("address is required");
     return toBech32(prefix, AddressUtils.toBytes(address));
   },
 
   toPlainHex(address: string): string {
-    if (!address) return "";
+    if (!address) throw new Error("address is required");
     return bytesToHex(AddressUtils.toBytes(address));
   },
 
   toHex(address: string): string {
-    if (!address) return "";
+    if (!address) throw new Error("address is required");
     const hex = AddressUtils.toPlainHex(address);
     if (hex === "0000000000000000000000000000000000000001") {
       return "0x1";
@@ -39,6 +39,10 @@ export const AddressUtils = {
   },
 
   validate(address: string, prefix: string = "init"): boolean {
+    if (!address) {
+      return false;
+    }
+
     if (address === "0x1") {
       return true;
     }
