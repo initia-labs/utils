@@ -160,8 +160,11 @@ getMetadata("uinit"); // "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e
 getMetadata("move/0x123...abc"); // "0x123...abc"
 
 // Get IBC denom hash
-getIbcDenom("channel-0", "uatom");
-// "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
+getIbcDenom(
+  "channel-0",
+  "l2/771d639f30fbe45e3fbca954ffbe2fcc26f915f5513c67a4a2d0bc1d635bdefd",
+);
+// "ibc/82EB1C694C571F954E68BFD68CFCFCD6123B0EBB69AAA8BAB7A082939B45E802"
 ```
 
 ## API Reference
