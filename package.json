@@ -29,22 +29,20 @@
     "test": "vitest run",
     "prepare": "simple-git-hooks"
   },
-  "dependencies": {
+  "devDependencies": {
     "@cosmjs/encoding": "^0.34.0",
+    "@initia/eslint-config-react-app": "^1.1.0",
     "@mysten/bcs": "^1.7.0",
     "@noble/hashes": "^1.8.0",
-    "bignumber.js": "^9.3.1",
-    "viem": "^2.33.1"
-  },
-  "devDependencies": {
-    "@initia/eslint-config-react-app": "^1.1.0",
     "@tsconfig/recommended": "^1.0.10",
     "@types/node": "^24.1.0",
+    "bignumber.js": "^9.3.1",
     "eslint": "^9.32.0",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
     "simple-git-hooks": "^2.13.0",
     "typescript": "^5.8.3",
+    "viem": "^2.33.1",
     "vite": "^7.0.6",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"

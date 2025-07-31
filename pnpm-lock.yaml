@@ -7,32 +7,28 @@ settings:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
       '@cosmjs/encoding':
         specifier: ^0.34.0
         version: 0.34.0
+      '@initia/eslint-config-react-app':
+        specifier: ^1.1.0
+        version: 1.1.0(eslint@9.32.0)(typescript@5.8.3)
       '@mysten/bcs':
         specifier: ^1.7.0
         version: 1.7.0
       '@noble/hashes':
         specifier: ^1.8.0
         version: 1.8.0
-      bignumber.js:
-        specifier: ^9.3.1
-        version: 9.3.1
-      viem:
-        specifier: ^2.33.1
-        version: 2.33.1(typescript@5.8.3)
-    devDependencies:
-      '@initia/eslint-config-react-app':
-        specifier: ^1.1.0
-        version: 1.1.0(eslint@9.32.0)(typescript@5.8.3)
       '@tsconfig/recommended':
         specifier: ^1.0.10
         version: 1.0.10
       '@types/node':
         specifier: ^24.1.0
         version: 24.1.0
+      bignumber.js:
+        specifier: ^9.3.1
+        version: 9.3.1
       eslint:
         specifier: ^9.32.0
         version: 9.32.0
@@ -48,6 +44,9 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
+      viem:
+        specifier: ^2.33.1
+        version: 2.33.1(typescript@5.8.3)
       vite:
         specifier: ^7.0.6
         version: 7.0.6(@types/node@24.1.0)(yaml@2.8.0)
