@@ -4,7 +4,7 @@ import { bcs, resolveBcsType } from "./bcs";
 
 describe("BCS", () => {
   describe("BCS Serialization Tests", () => {
-    it("Address Serialization", () => {
+    it("Address Serialization - Bech32 format", () => {
       const serialized = bcs
         .address()
         .serialize("init1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqr5e3d")
@@ -14,7 +14,7 @@ describe("BCS", () => {
       );
     });
 
-    it("Address Serialization", () => {
+    it("Address Serialization - Hex format", () => {
       const serialized = bcs.address().serialize("0x1").toBase64();
       expect(serialized).toEqual(
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=",
