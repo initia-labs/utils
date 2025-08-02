@@ -108,8 +108,9 @@ InitiaAddress.equals(
 
 // Convert to bytes
 const address = InitiaAddress("0x1");
-address.toBytes(); // Uint8Array(20)
-address.toBytes(32); // Uint8Array(32)
+address.bytes; // Uint8Array(20)
+const address32 = InitiaAddress("0x1", 32);
+address32.bytes; // Uint8Array(32)
 
 // Special handling for address 0x1
 const specialAddress = InitiaAddress("0x1");
@@ -248,11 +249,12 @@ Formats a decimal as a percentage.
 
 ### Address Utilities
 
-#### InitiaAddress(address)
+#### InitiaAddress(address, byteLength?)
 
 Creates an InitiaAddress instance. Can be called with or without the `new` keyword.
 
 - `address`: `string` - The address (hex or bech32) to convert (required)
+- `byteLength`: `number` - Target byte length for the bytes property (default: 20)
 - Throws: `Error` - "address is required" for empty addresses, "invalid address" for invalid addresses
 
 ##### Instance Properties
@@ -260,15 +262,7 @@ Creates an InitiaAddress instance. Can be called with or without the `new` keywo
 - `bech32`: `string` - The address in bech32 format
 - `hex`: `string` - The address in checksummed hex format
 - `rawHex`: `string` - The address in raw hex format (lowercase, no prefix)
-
-##### Instance Methods
-
-#### toBytes(byteLength?)
-
-Converts the address to bytes.
-
-- `byteLength`: `number` - Target byte length (default: 20)
-- Returns: `Uint8Array` - The address as bytes
+- `bytes`: `Uint8Array` - The address as bytes (length determined by constructor parameter)
 
 ##### Static Methods
 
