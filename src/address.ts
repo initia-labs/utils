@@ -54,7 +54,12 @@ class InitiaAddressImpl implements InitiaAddress {
       return "0x1";
     }
 
-    // Use checksum
+    // For 32-byte addresses, just return with 0x prefix (no checksum)
+    if (this.bytes.length === 32) {
+      return `0x${rawHex}`;
+    }
+
+    // For 20-byte addresses, use checksum
     return getAddress(`0x${rawHex}`);
   }
 
