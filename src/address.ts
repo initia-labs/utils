@@ -25,19 +25,20 @@ class InitiaAddressImpl implements InitiaAddress {
 
   get bytes(): Uint8Array {
     if (this.address.match(/^0x[0-9a-fA-F]+$/)) {
-      const hexLength = (this.address.length - 2) / 2;
-      const targetByteLength = this.byteLength ?? (hexLength > 20 ? 32 : 20);
+      const addressBytesLength = (this.address.length - 2) / 2;
+      const targetLength =
+        this.byteLength ?? (addressBytesLength > 20 ? 32 : 20);
       // Pad with leading zeros to reach the target byte length
       // This handles Move addresses that have leading zeros removed (e.g., 0x1 -> 0x0000...0001)
       return hexToBytes(
-        this.address.replace("0x", "").padStart(targetByteLength * 2, "0"),
+        this.address.replace("0x", "").padStart(targetLength * 2, "0"),
       );
     }
 
     const { data } = fromBech32(this.address);
-    const targetByteLength = this.byteLength ?? (data.length > 20 ? 32 : 20);
-    const padding = Math.max(0, targetByteLength - data.length);
-    return new Uint8Array([...Array(padding).fill(0), ...data]);
+    const targetLength = this.byteLength ?? (data.length > 20 ? 32 : 20);
+    const leadingZeros = Math.max(0, targetLength - data.length);
+    return new Uint8Array([...Array(leadingZeros).fill(0), ...data]);
   }
 
   get bech32(): string {
@@ -80,9 +81,9 @@ class InitiaAddressImpl implements InitiaAddress {
     // Note: Move addresses can be shorter than 40 or 64 chars because Move removes leading zeros
     // For example, 0x1 is a valid address that represents 0x0000...0001
     if (address.match(/^0x[0-9a-fA-F]+$/)) {
-      const hexLength = address.length - 2; // Remove 0x prefix
+      const hexCharsCount = address.length - 2; // Remove 0x prefix
       // Accept any hex length up to 64 chars (32 bytes)
-      return hexLength > 0 && hexLength <= 64;
+      return hexCharsCount > 0 && hexCharsCount <= 64;
     }
 
     try {

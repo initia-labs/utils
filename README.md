@@ -197,14 +197,18 @@ getIbcDenom(
 
 ## API Reference
 
-### truncate(str?, lengths?)
+### Text Utilities
+
+**truncate(str?, lengths?)**
 
 Truncates a string, keeping the beginning and end.
 
 - `str`: `string` - The string to truncate (default: "")
 - `lengths`: `[number, number]` - Characters to keep at [start, end] (default: [6, 6])
 
-### formatNumber(value, options?)
+### Number Formatting
+
+**formatNumber(value, options?)**
 
 Formats a number with thousands separators and decimal places.
 
@@ -213,7 +217,7 @@ Formats a number with thousands separators and decimal places.
 - `options.abbr`: `boolean` - Use abbreviations (K, M, B, T) (default: false)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 
-### formatAmount(value, options?)
+**formatAmount(value, options?)**
 
 Formats a blockchain amount, converting from base units to display units.
 
@@ -223,23 +227,7 @@ Formats a blockchain amount, converting from base units to display units.
 - `options.abbr`: `boolean` - Use abbreviations (default: false)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 
-### toBaseUnit(value, options?)
-
-Converts a display amount to base units.
-
-- `value`: `number | string | bigint | BigNumber` - The display amount
-- `options.decimals`: `number` - Token decimals (default: 0)
-- `options.fallback`: `string` - Value to return for invalid inputs (default: "")
-
-### fromBaseUnit(value, options?)
-
-Converts base units to a display amount.
-
-- `value`: `number | string | bigint | BigNumber` - The amount in base units
-- `options.decimals`: `number` - Token decimals (default: 0)
-- `options.fallback`: `string` - Value to return for invalid inputs (default: "")
-
-### formatPercent(value, options?)
+**formatPercent(value, options?)**
 
 Formats a decimal as a percentage.
 
@@ -247,9 +235,27 @@ Formats a decimal as a percentage.
 - `options.dp`: `number` - Decimal places (default: 2 for <100%, 0 for ≥100%)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 
+### Unit Conversion
+
+**toBaseUnit(value, options?)**
+
+Converts a display amount to base units.
+
+- `value`: `number | string | bigint | BigNumber` - The display amount
+- `options.decimals`: `number` - Token decimals (default: 0)
+- `options.fallback`: `string` - Value to return for invalid inputs (default: "")
+
+**fromBaseUnit(value, options?)**
+
+Converts base units to a display amount.
+
+- `value`: `number | string | bigint | BigNumber` - The amount in base units
+- `options.decimals`: `number` - Token decimals (default: 0)
+- `options.fallback`: `string` - Value to return for invalid inputs (default: "")
+
 ### Address Utilities
 
-#### InitiaAddress(address, byteLength?)
+**InitiaAddress(address, byteLength?)**
 
 Creates an InitiaAddress instance. Can be called with or without the `new` keyword.
 
@@ -257,23 +263,21 @@ Creates an InitiaAddress instance. Can be called with or without the `new` keywo
 - `byteLength`: `number` - Target byte length for the bytes property (default: 20)
 - Throws: `Error` - "address is required" for empty addresses, "invalid address" for invalid addresses
 
-##### Instance Properties
+Instance Properties:
 
 - `bech32`: `string` - The address in bech32 format
 - `hex`: `string` - The address in checksummed hex format
 - `rawHex`: `string` - The address in raw hex format (lowercase, no prefix)
 - `bytes`: `Uint8Array` - The address as bytes (length determined by constructor parameter)
 
-##### Static Methods
-
-#### InitiaAddress.validate(address)
+**InitiaAddress.validate(address)**
 
 Validates an address.
 
 - `address`: `string` - The address to validate
 - Returns: `boolean` - false if address is empty or invalid, true if valid
 
-#### InitiaAddress.equals(address1, address2)
+**InitiaAddress.equals(address1, address2)**
 
 Compares two addresses regardless of format.
 
@@ -283,7 +287,7 @@ Compares two addresses regardless of format.
 
 ### BCS Serialization
 
-#### bcs
+**bcs**
 
 Extended BCS serializer that includes all standard types from `@mysten/bcs` plus:
 
@@ -295,7 +299,7 @@ Extended BCS serializer that includes all standard types from `@mysten/bcs` plus
 - `bcs.decimal256()` - 256-bit decimal with 10^18 scaling
 - `bcs.bigdecimal()` - Arbitrary precision decimal
 
-#### resolveBcsType(typeStr)
+**resolveBcsType(typeStr)**
 
 Resolves Move-style type strings to BCS types.
 
@@ -304,7 +308,7 @@ Resolves Move-style type strings to BCS types.
 
 ### Object Utilities
 
-#### createObjectAddress(source, seed)
+**createObjectAddress(source, seed)**
 
 Creates a deterministic object address.
 
@@ -312,7 +316,7 @@ Creates a deterministic object address.
 - `seed`: `string` - Seed string
 - Returns: `string` - Object address (hex)
 
-#### createUserDerivedObjectAddress(source, derivedFrom)
+**createUserDerivedObjectAddress(source, derivedFrom)**
 
 Creates a user-derived object address.
 
@@ -320,14 +324,14 @@ Creates a user-derived object address.
 - `derivedFrom`: `string` - Address to derive from
 - Returns: `string` - Derived object address (hex)
 
-#### denomToMetadata(denom)
+**denomToMetadata(denom)**
 
 Gets the metadata address for a denomination.
 
 - `denom`: `string` - The denomination
 - Returns: `string` - Metadata address
 
-#### getIbcDenom(channelId, denom)
+**getIbcDenom(channelId, denom)**
 
 Calculates the IBC denom hash.
 
