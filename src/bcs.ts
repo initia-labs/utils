@@ -2,13 +2,13 @@ import BigNumber from "bignumber.js";
 import { bytesToHex } from "viem";
 import type { BcsType, BcsTypeOptions } from "@mysten/bcs";
 import { bcs as mystenBcs } from "@mysten/bcs";
-import { AddressUtils } from "./address";
+import { InitiaAddress } from "./address";
 
 function addressSerializer(
   options?: BcsTypeOptions<Uint8Array, Iterable<number>>,
 ) {
   return bcs.bytes(32, options).transform({
-    input: (value: string) => AddressUtils.toBytes(value, 32),
+    input: (value: string) => InitiaAddress(value, 32).bytes,
     output: (value: Uint8Array) => bytesToHex(value),
   });
 }

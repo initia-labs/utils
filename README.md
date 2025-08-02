@@ -84,29 +84,56 @@ toBaseUnit("1.9999999", { decimals: 6 }); // "1999999"
 ### Address Utilities
 
 ```typescript
-import { AddressUtils } from "@initia/utils";
+import { InitiaAddress } from "@initia/utils";
 
 // Convert between address formats
-AddressUtils.toHex("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs");
-// "0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1"
+const address1 = InitiaAddress("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs");
+address1.hex; // "0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1"
+address1.rawHex; // "77d96ae5e7885b19b5bf4e680e129ace8fd58fb1"
 
-AddressUtils.toBech32("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1");
-// "init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"
+const address2 = InitiaAddress("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1");
+address2.bech32; // "init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"
+address2.rawHex; // "77d96ae5e7885b19b5bf4e680e129ace8fd58fb1"
 
 // Validate addresses
-AddressUtils.validate("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"); // true
-AddressUtils.validate("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1"); // true
-AddressUtils.validate("invalid-address"); // false
+InitiaAddress.validate("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"); // true
+InitiaAddress.validate("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1"); // true
+InitiaAddress.validate("invalid-address"); // false
 
 // Compare addresses (handles different formats)
-AddressUtils.equals(
+InitiaAddress.equals(
   "init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs",
   "0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1",
 ); // true
 
+// Convert to bytes
+const address = InitiaAddress("0x1");
+address.toBytes(); // Uint8Array(20)
+address.toBytes(32); // Uint8Array(32)
+
 // Special handling for address 0x1
-AddressUtils.toHex("0x1"); // "0x1"
-AddressUtils.toBech32("0x1"); // "init1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqr5e3d"
+const specialAddress = InitiaAddress("0x1");
+specialAddress.hex; // "0x1"
+specialAddress.bech32; // "init1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqr5e3d"
+
+// Empty or invalid addresses throw errors
+try {
+  InitiaAddress(""); // throws "address is required"
+} catch (e) {
+  console.error(e.message);
+}
+
+try {
+  InitiaAddress("invalid-address"); // throws "invalid address"
+} catch (e) {
+  console.error(e.message);
+}
+
+// Destructuring support
+const { bech32, hex, rawHex } = InitiaAddress("0x1");
+console.log(bech32); // "init1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqr5e3d"
+console.log(hex); // "0x1"
+console.log(rawHex); // "0000000000000000000000000000000000000001"
 ```
 
 ### BCS (Binary Canonical Serialization)
@@ -140,24 +167,24 @@ const optionType = resolveBcsType("0x1::option::Option<u64>"); // returns bcs.op
 import {
   createObjectAddress,
   createUserDerivedObjectAddress,
-  getMetadata,
+  denomToMetadata,
   getIbcDenom,
 } from "@initia/utils";
 
 // Create deterministic object addresses
-const objectAddr = createObjectAddress("0x1", "uinit");
-// "8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9"
+const objectAddress = createObjectAddress("0x1", "uinit");
+// "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9"
 
 // Create user-derived object addresses
-const derivedAddr = createUserDerivedObjectAddress(
+const derivedAddress = createUserDerivedObjectAddress(
   "0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1",
   "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9",
 );
-// "350045f8766ac3ff7e58ee316786cf1646765f435824345bc9f79d9626c11396"
+// "0x350045f8766ac3ff7e58ee316786cf1646765f435824345bc9f79d9626c11396"
 
 // Get metadata address for denoms
-getMetadata("uinit"); // "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9"
-getMetadata("move/0x123...abc"); // "0x123...abc"
+denomToMetadata("uinit"); // "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9"
+denomToMetadata("move/0x123...abc"); // "0x123...abc"
 
 // Get IBC denom hash
 getIbcDenom(
@@ -221,41 +248,44 @@ Formats a decimal as a percentage.
 
 ### Address Utilities
 
-#### AddressUtils.toBytes(address, byteLength?)
+#### InitiaAddress(address)
 
-Converts an address to bytes.
+Creates an InitiaAddress instance. Can be called with or without the `new` keyword.
 
-- `address`: `string` - The address to convert (required)
+- `address`: `string` - The address (hex or bech32) to convert (required)
+- Throws: `Error` - "address is required" for empty addresses, "invalid address" for invalid addresses
+
+##### Instance Properties
+
+- `bech32`: `string` - The address in bech32 format
+- `hex`: `string` - The address in checksummed hex format
+- `rawHex`: `string` - The address in raw hex format (lowercase, no prefix)
+
+##### Instance Methods
+
+#### toBytes(byteLength?)
+
+Converts the address to bytes.
+
 - `byteLength`: `number` - Target byte length (default: 20)
+- Returns: `Uint8Array` - The address as bytes
 
-#### AddressUtils.toBech32(address, prefix?)
+##### Static Methods
 
-Converts an address to bech32 format.
-
-- `address`: `string` - The address to convert (required)
-- `prefix`: `string` - Bech32 prefix (default: "init")
-
-#### AddressUtils.toHex(address)
-
-Converts an address to checksummed hex format.
-
-- `address`: `string` - The address to convert (required)
-
-#### AddressUtils.validate(address, prefix?)
+#### InitiaAddress.validate(address)
 
 Validates an address.
 
-- `address`: `string` - The address to validate (required)
-- `prefix`: `string` - Expected bech32 prefix (default: "init")
-- Returns: `boolean` - false if address is empty, true if valid
+- `address`: `string` - The address to validate
+- Returns: `boolean` - false if address is empty or invalid, true if valid
 
-#### AddressUtils.equals(address1, address2)
+#### InitiaAddress.equals(address1, address2)
 
 Compares two addresses regardless of format.
 
-- `address1`: `string` - First address (required)
-- `address2`: `string` - Second address (required)
-- Returns: `boolean` - true if addresses are equal
+- `address1`: `string` - First address
+- `address2`: `string` - Second address
+- Returns: `boolean` - true if addresses are equal, handles empty/invalid addresses gracefully
 
 ### BCS Serialization
 
@@ -296,7 +326,7 @@ Creates a user-derived object address.
 - `derivedFrom`: `string` - Address to derive from
 - Returns: `string` - Derived object address (hex)
 
-#### getMetadata(denom)
+#### denomToMetadata(denom)
 
 Gets the metadata address for a denomination.
 
