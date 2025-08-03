@@ -141,9 +141,13 @@ class InitiaAddressImpl implements InitiaAddress {
   }
 }
 
+// Cache for singleton pattern
+const addressCache = new Map<string, InitiaAddressImpl>();
+
 /**
  * Creates an InitiaAddress instance from a hex or bech32 address string.
  * Supports both 20-byte and 32-byte addresses.
+ * Uses singleton pattern to cache instances.
  * @param address - The address string in hex or bech32 format
  * @param byteLength - Optional byte length (20 or 32), auto-detected if not provided
  */
@@ -151,7 +155,22 @@ export function InitiaAddress(
   address: string,
   byteLength?: number,
 ): InitiaAddress {
-  return new InitiaAddressImpl(address, byteLength);
+  // Create a cache key that includes both address and byteLength
+  const normalizedAddress = address.toLowerCase();
+  const cacheKey = byteLength
+    ? `${normalizedAddress}:${byteLength}`
+    : normalizedAddress;
+
+  // Check if we already have an instance for this address and byteLength
+  const cachedInstance = addressCache.get(cacheKey);
+  if (cachedInstance) {
+    return cachedInstance;
+  }
+
+  // Create new instance and cache it
+  const newInstance = new InitiaAddressImpl(address, byteLength);
+  addressCache.set(cacheKey, newInstance);
+  return newInstance;
 }
 
 // Add static methods to the factory function
