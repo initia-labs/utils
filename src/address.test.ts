@@ -161,4 +161,13 @@ describe("InitiaAddress", () => {
     );
     expect(address.bytes.length).toBe(32);
   });
+
+  it("should recognize addresses with and without leading zeros as equal", () => {
+    expect(
+      InitiaAddress.equals(
+        "0x0a662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+        "0xa662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+      ),
+    ).toBe(true);
+  });
 });
