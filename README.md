@@ -359,22 +359,7 @@ Calculates the IBC denom hash.
 
 ## Development
 
-```bash
-# Install dependencies
-pnpm install
-
-# Run tests
-pnpm test
-
-# Build the library
-pnpm build
-
-# Type checking
-pnpm typecheck
-
-# Linting
-pnpm lint
-```
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 
