@@ -183,6 +183,7 @@ import {
   createUserDerivedObjectAddress,
   denomToMetadata,
   getIbcDenom,
+  removeLeadingZeros,
 } from "@initia/utils";
 
 // Create deterministic object addresses
@@ -206,6 +207,11 @@ getIbcDenom(
   "l2/771d639f30fbe45e3fbca954ffbe2fcc26f915f5513c67a4a2d0bc1d635bdefd",
 );
 // "ibc/82EB1C694C571F954E68BFD68CFCFCD6123B0EBB69AAA8BAB7A082939B45E802"
+
+// Remove leading zeros from hex strings
+removeLeadingZeros("0x0000123"); // "0x123"
+removeLeadingZeros("0000abc"); // "abc"
+removeLeadingZeros("0x0"); // "0x0"
 ```
 
 ## API Reference
@@ -356,6 +362,13 @@ Calculates the IBC denom hash.
 - `channelId`: `string` - IBC channel ID
 - `denom`: `string` - Original denomination
 - Returns: `string` - IBC denom (e.g., "ibc/HASH...")
+
+**removeLeadingZeros(hex)**
+
+Removes leading zeros from a hex string while preserving the 0x prefix if present.
+
+- `hex`: `string` - The hex string to process
+- Returns: `string` - The hex string without leading zeros
 
 ## Development
 
