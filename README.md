@@ -60,6 +60,11 @@ formatNumber(undefined); // ""
 formatNumber(undefined, { fallback: "N/A" }); // "N/A"
 formatAmount("", { fallback: "0" }); // "0"
 formatPercent(NaN, { fallback: "Invalid" }); // "Invalid"
+
+// Custom rounding modes (default is ROUND_DOWN)
+formatNumber("1.236", { dp: 2 }); // "1.23" (ROUND_DOWN)
+formatNumber("1.236", { dp: 2, roundingMode: BigNumber.ROUND_UP }); // "1.24"
+formatNumber("1.235", { dp: 2, roundingMode: BigNumber.ROUND_HALF_UP }); // "1.24"
 ```
 
 ### Base Unit Conversion
@@ -94,6 +99,14 @@ address1.rawHex; // "77d96ae5e7885b19b5bf4e680e129ace8fd58fb1"
 const address2 = InitiaAddress("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1");
 address2.bech32; // "init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"
 address2.rawHex; // "77d96ae5e7885b19b5bf4e680e129ace8fd58fb1"
+
+// 32-byte Move addresses with leading zeros stripped
+const moveAddress = InitiaAddress(
+  "0x0a662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+);
+moveAddress.hex; // "0xa662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467"
+moveAddress.rawHex; // "0a662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467"
+moveAddress.bech32; // "init1pfnzlegnrh9u2vdft7rxgdhx7krxytg6fk7s8upwjh5u25z073ns0k5njh"
 
 // Validate addresses
 InitiaAddress.validate("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs"); // true
@@ -216,6 +229,7 @@ Formats a number with thousands separators and decimal places.
 - `options.dp`: `number` - Decimal places (default: 2)
 - `options.abbr`: `boolean` - Use abbreviations (K, M, B, T) (default: false)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
+- `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 
 **formatAmount(value, options?)**
 
@@ -226,6 +240,7 @@ Formats a blockchain amount, converting from base units to display units.
 - `options.dp`: `number` - Decimal places (default: min(decimals, 6))
 - `options.abbr`: `boolean` - Use abbreviations (default: false)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
+- `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 
 **formatPercent(value, options?)**
 
@@ -234,6 +249,7 @@ Formats a decimal as a percentage.
 - `value`: `number | string | bigint | BigNumber` - The decimal value (0.1 = 10%)
 - `options.dp`: `number` - Decimal places (default: 2 for <100%, 0 for ≥100%)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
+- `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 
 ### Unit Conversion
 
@@ -244,6 +260,7 @@ Converts a display amount to base units.
 - `value`: `number | string | bigint | BigNumber` - The display amount
 - `options.decimals`: `number` - Token decimals (default: 0)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
+- `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 
 **fromBaseUnit(value, options?)**
 
@@ -252,6 +269,7 @@ Converts base units to a display amount.
 - `value`: `number | string | bigint | BigNumber` - The amount in base units
 - `options.decimals`: `number` - Token decimals (default: 0)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
+- `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 
 ### Address Utilities
 
@@ -266,8 +284,8 @@ Creates an InitiaAddress instance. Can be called with or without the `new` keywo
 Instance Properties:
 
 - `bech32`: `string` - The address in bech32 format
-- `hex`: `string` - The address in checksummed hex format
-- `rawHex`: `string` - The address in raw hex format (lowercase, no prefix)
+- `hex`: `string` - The address in hex format (checksummed for 20-byte, leading zeros stripped for 32-byte)
+- `rawHex`: `string` - The address in raw hex format (lowercase, no prefix, full representation)
 - `bytes`: `Uint8Array` - The address as bytes (length determined by constructor parameter)
 
 **InitiaAddress.validate(address)**

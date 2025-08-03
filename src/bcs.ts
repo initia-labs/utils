@@ -80,7 +80,12 @@ export const bcs = {
   bigdecimal: bigdecimalSerializer,
 };
 
-/** Recursively resolves a Move-style type string into a bcs.*() call */
+/**
+ * Recursively resolves a Move-style type string into a bcs type.
+ * Handles generic types like option<T> and simplifies module paths.
+ * @param typeStr - Move type string (e.g., "0x1::string::String")
+ * @returns The corresponding BCS type
+ */
 export function resolveBcsType(typeStr: string): BcsType<unknown, unknown> {
   const type = typeStr.replaceAll(/0x1::(\w+)::(\w+)/g, "$2").toLowerCase();
 
@@ -106,7 +111,10 @@ export function resolveBcsType(typeStr: string): BcsType<unknown, unknown> {
   return bcs[type]();
 }
 
-// utils for bcs
+/**
+ * Converts a bigint to little-endian byte array.
+ * Used for encoding decimal values in BCS format.
+ */
 function toLittleEndian(value: bigint): Uint8Array {
   if (value < 0n) {
     throw new Error("negative values are not supported");
@@ -125,6 +133,10 @@ function toLittleEndian(value: bigint): Uint8Array {
   return new Uint8Array(bytes);
 }
 
+/**
+ * Converts a little-endian byte array to bigint.
+ * Used for decoding decimal values from BCS format.
+ */
 function fromLittleEndian(bytes: Uint8Array): bigint {
   let result = 0n;
   for (let i = 0; i < bytes.length; i++) {

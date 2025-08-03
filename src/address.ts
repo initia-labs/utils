@@ -1,6 +1,7 @@
 import { getAddress, isAddress } from "viem";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
+import { removeLeadingZeros } from "./object";
 
 export interface InitiaAddress {
   readonly bech32: string;
@@ -23,6 +24,10 @@ class InitiaAddressImpl implements InitiaAddress {
     }
   }
 
+  /**
+   * Converts the address to a byte array representation.
+   * Handles both hex and bech32 formats, padding with leading zeros as needed.
+   */
   get bytes(): Uint8Array {
     if (this.address.match(/^0x[0-9a-fA-F]+$/)) {
       const addressBytesLength = (this.address.length - 2) / 2;
@@ -41,29 +46,47 @@ class InitiaAddressImpl implements InitiaAddress {
     return new Uint8Array([...Array(leadingZeros).fill(0), ...data]);
   }
 
+  /**
+   * Returns the bech32-encoded representation of the address.
+   * Uses "init" as the prefix for all addresses.
+   */
   get bech32(): string {
     return toBech32("init", this.bytes);
   }
 
+  /**
+   * Returns the raw hex string representation without 0x prefix or checksum.
+   * Always returns lowercase hex string.
+   */
   get rawHex(): string {
     return bytesToHex(this.bytes);
   }
 
+  /**
+   * Returns the hex representation with 0x prefix.
+   * For 20-byte addresses: returns checksummed address.
+   * For 32-byte addresses: returns lowercase hex with leading zeros stripped.
+   * For special Move addresses: removes leading zeros (e.g., 0x1).
+   */
   get hex(): string {
     const rawHex = this.rawHex;
     if (rawHex === "0000000000000000000000000000000000000001") {
       return "0x1";
     }
 
-    // For 32-byte addresses, just return with 0x prefix (no checksum)
+    // For 32-byte addresses, strip leading zeros and return with 0x prefix (no checksum)
     if (this.bytes.length === 32) {
-      return `0x${rawHex}`;
+      return removeLeadingZeros(`0x${rawHex}`);
     }
 
     // For 20-byte addresses, use checksum
     return getAddress(`0x${rawHex}`);
   }
 
+  /**
+   * Validates whether a string is a valid Initia address.
+   * Accepts hex addresses (with or without leading zeros) and bech32 addresses.
+   */
   static validate(address: string): boolean {
     if (!address) {
       return false;
@@ -93,6 +116,10 @@ class InitiaAddressImpl implements InitiaAddress {
     }
   }
 
+  /**
+   * Checks if two addresses are equal, regardless of format.
+   * Compares the hex representation of both addresses.
+   */
   static equals(address1: string, address2: string): boolean {
     if (!address1 || !address2) {
       return address1 === address2;
@@ -114,7 +141,12 @@ class InitiaAddressImpl implements InitiaAddress {
   }
 }
 
-// Factory function that can be called with or without "new"
+/**
+ * Creates an InitiaAddress instance from a hex or bech32 address string.
+ * Supports both 20-byte and 32-byte addresses.
+ * @param address - The address string in hex or bech32 format
+ * @param byteLength - Optional byte length (20 or 32), auto-detected if not provided
+ */
 export function InitiaAddress(
   address: string,
   byteLength?: number,

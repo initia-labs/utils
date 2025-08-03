@@ -124,4 +124,41 @@ describe("InitiaAddress", () => {
     expect(address.rawHex).toBe("0000000000000000000000000000000000000abc");
     expect(address.bytes.length).toBe(20);
   });
+
+  it("should handle lowercase 20-byte hex addresses", () => {
+    const address = InitiaAddress("0x77d96ae5e7885b19b5bf4e680e129ace8fd58fb1");
+    expect(address.bech32).toBe("init1wlvk4e083pd3nddlfe5quy56e68atra3gu9xfs");
+    expect(address.hex).toBe("0x77d96ae5e7885B19b5Bf4e680E129ACe8fD58fB1"); // Checksummed
+    expect(address.rawHex).toBe("77d96ae5e7885b19b5bf4e680e129ace8fd58fb1");
+    expect(address.bytes.length).toBe(20);
+  });
+
+  it("should handle lowercase 32-byte hex addresses", () => {
+    const address = InitiaAddress(
+      "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9",
+    );
+    expect(address.bech32).toBe(
+      "init13ern80dtea754lpazncd63kfhaf0kr7wne9ejmynncv4hz7gj8vs6rnj5j",
+    );
+    expect(address.hex).toBe(
+      "0x8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9",
+    ); // 32-byte addresses are not checksummed
+    expect(address.rawHex).toBe(
+      "8e4733bdabcf7d4afc3d14f0dd46c9bf52fb0fce9e4b996c939e195b8bc891d9",
+    );
+    expect(address.bytes.length).toBe(32);
+  });
+
+  it("should strip leading zeros from 32-byte hex addresses", () => {
+    const address = InitiaAddress(
+      "init1pfnzlegnrh9u2vdft7rxgdhx7krxytg6fk7s8upwjh5u25z073ns0k5njh",
+    );
+    expect(address.hex).toBe(
+      "0xa662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+    );
+    expect(address.rawHex).toBe(
+      "0a662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+    );
+    expect(address.bytes.length).toBe(32);
+  });
 });

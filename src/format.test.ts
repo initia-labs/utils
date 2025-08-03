@@ -99,6 +99,44 @@ describe("formatNumber", () => {
       "9,007,199,254,740,993",
     );
   });
+
+  it("handles custom rounding modes", () => {
+    // Default is ROUND_DOWN
+    expect(formatNumber("1.236", { dp: 2 })).toBe("1.23");
+    expect(formatNumber("1.234", { dp: 2 })).toBe("1.23");
+
+    // ROUND_UP
+    expect(
+      formatNumber("1.234", { dp: 2, roundingMode: BigNumber.ROUND_UP }),
+    ).toBe("1.24");
+    expect(
+      formatNumber("1.231", { dp: 2, roundingMode: BigNumber.ROUND_UP }),
+    ).toBe("1.24");
+
+    // ROUND_HALF_UP
+    expect(
+      formatNumber("1.235", { dp: 2, roundingMode: BigNumber.ROUND_HALF_UP }),
+    ).toBe("1.24");
+    expect(
+      formatNumber("1.234", { dp: 2, roundingMode: BigNumber.ROUND_HALF_UP }),
+    ).toBe("1.23");
+
+    // Works with abbreviations
+    expect(
+      formatNumber("1234.567", {
+        abbr: true,
+        dp: 2,
+        roundingMode: BigNumber.ROUND_UP,
+      }),
+    ).toBe("1.24K");
+    expect(
+      formatNumber("1234.567", {
+        abbr: true,
+        dp: 2,
+        roundingMode: BigNumber.ROUND_DOWN,
+      }),
+    ).toBe("1.23K");
+  });
 });
 
 describe("formatAmount", () => {
@@ -186,6 +224,39 @@ describe("formatAmount", () => {
       formatAmount(BigInt("1234567890000"), { decimals: 6, abbr: true }),
     ).toBe("1.234567M");
   });
+
+  it("handles custom rounding modes", () => {
+    // Default is ROUND_DOWN
+    expect(formatAmount("1234567896", { decimals: 6, dp: 5 })).toBe(
+      "1,234.56789",
+    );
+
+    // ROUND_UP
+    expect(
+      formatAmount("1234567896", {
+        decimals: 6,
+        dp: 5,
+        roundingMode: BigNumber.ROUND_UP,
+      }),
+    ).toBe("1,234.5679");
+
+    // ROUND_HALF_UP
+    expect(
+      formatAmount("1234567895", {
+        decimals: 6,
+        dp: 5,
+        roundingMode: BigNumber.ROUND_HALF_UP,
+      }),
+    ).toBe("1,234.5679");
+
+    // Works with auto-dp when not specified
+    expect(
+      formatAmount("1234567896", {
+        decimals: 6,
+        roundingMode: BigNumber.ROUND_UP,
+      }),
+    ).toBe("1,234.567896");
+  });
 });
 
 describe("fromBaseUnit", () => {
@@ -234,6 +305,33 @@ describe("fromBaseUnit", () => {
     expect(fromBaseUnit(BigInt("1234567890123456789"), { decimals: 18 })).toBe(
       "1.234567",
     );
+  });
+
+  it("handles custom rounding modes", () => {
+    // Default is ROUND_DOWN
+    expect(fromBaseUnit("1234567896", { decimals: 6 })).toBe("1234.567896");
+
+    // ROUND_UP (note: toFixed with limited decimals)
+    expect(
+      fromBaseUnit("1234567896123456789", {
+        decimals: 18,
+        roundingMode: BigNumber.ROUND_UP,
+      }),
+    ).toBe("1.234568");
+    expect(
+      fromBaseUnit("1234567890123456789", {
+        decimals: 18,
+        roundingMode: BigNumber.ROUND_DOWN,
+      }),
+    ).toBe("1.234567");
+
+    // ROUND_HALF_UP
+    expect(
+      fromBaseUnit("1234567895000000000", {
+        decimals: 18,
+        roundingMode: BigNumber.ROUND_HALF_UP,
+      }),
+    ).toBe("1.234568");
   });
 });
 
@@ -286,6 +384,53 @@ describe("toBaseUnit", () => {
     expect(toBaseUnit(BigInt(1500), { decimals: 3 })).toBe("1500000");
     expect(toBaseUnit(BigInt(-1234), { decimals: 6 })).toBe("-1234000000");
     expect(toBaseUnit(BigInt(0), { decimals: 18 })).toBe("0");
+  });
+
+  it("handles custom rounding modes", () => {
+    // Default is ROUND_DOWN
+    expect(toBaseUnit("1.9999999", { decimals: 6 })).toBe("1999999");
+
+    // ROUND_UP
+    expect(
+      toBaseUnit("1.9999999", {
+        decimals: 6,
+        roundingMode: BigNumber.ROUND_UP,
+      }),
+    ).toBe("2000000");
+    expect(
+      toBaseUnit("1.0000001", {
+        decimals: 6,
+        roundingMode: BigNumber.ROUND_UP,
+      }),
+    ).toBe("1000001");
+
+    // ROUND_HALF_UP
+    expect(
+      toBaseUnit("1.5000005", {
+        decimals: 6,
+        roundingMode: BigNumber.ROUND_HALF_UP,
+      }),
+    ).toBe("1500001");
+    expect(
+      toBaseUnit("1.4999994", {
+        decimals: 6,
+        roundingMode: BigNumber.ROUND_HALF_UP,
+      }),
+    ).toBe("1499999");
+
+    // Negative values
+    expect(
+      toBaseUnit("-1.9999999", {
+        decimals: 6,
+        roundingMode: BigNumber.ROUND_UP,
+      }),
+    ).toBe("-2000000");
+    expect(
+      toBaseUnit("-1.9999999", {
+        decimals: 6,
+        roundingMode: BigNumber.ROUND_DOWN,
+      }),
+    ).toBe("-1999999");
   });
 });
 
@@ -370,5 +515,46 @@ describe("formatPercent", () => {
     expect(formatPercent(BigInt(1))).toBe("100%");
     expect(formatPercent(BigInt(0))).toBe("0.00%");
     expect(formatPercent(BigInt(-1))).toBe("-100.00%");
+  });
+
+  it("handles custom rounding modes", () => {
+    // Default is ROUND_DOWN
+    expect(formatPercent("0.12346", { dp: 2 })).toBe("12.34%");
+
+    // ROUND_UP
+    expect(
+      formatPercent("0.12341", { dp: 2, roundingMode: BigNumber.ROUND_UP }),
+    ).toBe("12.35%");
+    expect(
+      formatPercent("0.12340", { dp: 2, roundingMode: BigNumber.ROUND_UP }),
+    ).toBe("12.34%");
+
+    // ROUND_HALF_UP
+    expect(
+      formatPercent("0.12345", {
+        dp: 2,
+        roundingMode: BigNumber.ROUND_HALF_UP,
+      }),
+    ).toBe("12.35%");
+    expect(
+      formatPercent("0.12344", {
+        dp: 2,
+        roundingMode: BigNumber.ROUND_HALF_UP,
+      }),
+    ).toBe("12.34%");
+
+    // Auto-dp with rounding modes
+    expect(formatPercent("0.99996", { roundingMode: BigNumber.ROUND_UP })).toBe(
+      "100.00%",
+    );
+    expect(
+      formatPercent("0.99996", { roundingMode: BigNumber.ROUND_DOWN }),
+    ).toBe("99.99%");
+    expect(formatPercent("1.00001", { roundingMode: BigNumber.ROUND_UP })).toBe(
+      "101%",
+    );
+    expect(
+      formatPercent("1.00001", { roundingMode: BigNumber.ROUND_DOWN }),
+    ).toBe("100%");
   });
 });

@@ -66,6 +66,24 @@ describe("object", () => {
       );
     });
 
+    it("should return the correct metadata for OP denom", () => {
+      const result = denomToMetadata(
+        "l2/4b66eb60bf9f503ea97fe4dc96d5c604c1dca14ee988e21510ac4b087bf72671",
+      );
+      expect(result).toBe(
+        "0xe8284aa7be0ea5c3300a9d2810817cc400a9dd25a5bbee759a037a2e15280b90",
+      );
+    });
+
+    it("should return the correct metadata for IBC denom", () => {
+      const result = denomToMetadata(
+        "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+      );
+      expect(result).toBe(
+        "0xa662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+      );
+    });
+
     it("should throw error with empty denom", () => {
       expect(() => denomToMetadata("")).toThrow("Denom cannot be empty");
     });
