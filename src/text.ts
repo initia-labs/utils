@@ -1,3 +1,10 @@
+/**
+ * Truncates a string by keeping specified characters from the start and end.
+ * Adds ellipsis (...) in the middle if truncation occurs.
+ * @param str - The string to truncate
+ * @param lengths - Array of [prefixLength, suffixLength] to keep
+ * @returns The truncated string or original if shorter than threshold
+ */
 export function truncate(
   str: string = "",
   lengths: [number, number] = [6, 6],

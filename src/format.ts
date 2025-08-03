@@ -4,6 +4,7 @@ interface FormatNumberOptions {
   dp?: number;
   abbr?: boolean;
   fallback?: string;
+  roundingMode?: BigNumber.RoundingMode;
 }
 
 interface FormatAmountOptions extends FormatNumberOptions {
@@ -45,18 +46,28 @@ function addCommas(value: string): string {
   return parts[1] ? `${integerPart}.${parts[1]}` : integerPart;
 }
 
+/**
+ * Formats a number with optional abbreviation (K, M, B, T) and decimal places.
+ * @param value - The value to format
+ * @param options - Formatting options (dp: decimal places, abbr: abbreviate, fallback: default value, roundingMode: rounding mode)
+ */
 export function formatNumber(
   value?: number | string | bigint | BigNumber,
   options?: FormatNumberOptions,
 ): string {
-  const { dp = 2, abbr = false, fallback = "" } = options || {};
+  const {
+    dp = 2,
+    abbr = false,
+    fallback = "",
+    roundingMode = BigNumber.ROUND_DOWN,
+  } = options || {};
 
   const num = toBigNumber(value);
   if (!num) return fallback;
   if (num.isZero()) return "0";
 
   if (!abbr) {
-    return num.decimalPlaces(dp, BigNumber.ROUND_DOWN).toFormat();
+    return num.decimalPlaces(dp, roundingMode).toFormat();
   }
 
   const absNum = num.abs();
@@ -65,19 +76,31 @@ export function formatNumber(
   for (const { value: threshold, suffix } of ABBREVIATIONS) {
     if (absNum.gte(threshold)) {
       const abbreviated = absNum.div(threshold);
-      const formatted = abbreviated.toFormat(dp, BigNumber.ROUND_DOWN);
+      const formatted = abbreviated.toFormat(dp, roundingMode);
       return isNegative ? `-${formatted}${suffix}` : `${formatted}${suffix}`;
     }
   }
 
-  return num.decimalPlaces(dp, BigNumber.ROUND_DOWN).toFormat();
+  return num.decimalPlaces(dp, roundingMode).toFormat();
 }
 
+/**
+ * Formats an amount by converting from base units to display units.
+ * Applies decimal conversion before formatting.
+ * @param value - The amount in base units
+ * @param options - Formatting options including decimals for unit conversion and roundingMode
+ */
 export function formatAmount(
   value?: number | string | bigint | BigNumber,
   options?: FormatAmountOptions,
 ): string {
-  const { decimals = 0, dp, abbr, fallback = "" } = options || {};
+  const {
+    decimals = 0,
+    dp,
+    abbr,
+    fallback = "",
+    roundingMode = BigNumber.ROUND_DOWN,
+  } = options || {};
 
   const num = toBigNumber(value);
   if (!num) return fallback;
@@ -88,23 +111,34 @@ export function formatAmount(
 
   // When dp is not specified and decimals > 0, preserve trailing zeros
   if (dp === undefined && decimals > 0 && decimalPlaces > 0 && !abbr) {
-    const fixed = result.toFixed(decimalPlaces, BigNumber.ROUND_DOWN);
+    const fixed = result.toFixed(decimalPlaces, roundingMode);
     return addCommas(fixed);
   }
 
-  return formatNumber(result, { dp: decimalPlaces, abbr });
+  return formatNumber(result, { dp: decimalPlaces, abbr, roundingMode });
 }
 
 interface FromBaseUnitOptions {
   decimals?: number;
   fallback?: string;
+  roundingMode?: BigNumber.RoundingMode;
 }
 
+/**
+ * Converts a value from base units to display units.
+ * Always returns a fixed decimal string without abbreviation.
+ * @param value - The value in base units
+ * @param options - Options including decimals, fallback value, and roundingMode
+ */
 export function fromBaseUnit(
   value?: number | string | bigint | BigNumber,
   options?: FromBaseUnitOptions,
 ): string {
-  const { decimals = 0, fallback = "" } = options || {};
+  const {
+    decimals = 0,
+    fallback = "",
+    roundingMode = BigNumber.ROUND_DOWN,
+  } = options || {};
 
   const num = toBigNumber(value);
   if (!num) return fallback;
@@ -112,37 +146,60 @@ export function fromBaseUnit(
   const result = num.div(getPowerOf10(decimals));
   const decimalPlaces = Math.min(decimals, 6);
 
-  return result.toFixed(decimalPlaces, BigNumber.ROUND_DOWN);
+  return result.toFixed(decimalPlaces, roundingMode);
 }
 
 interface ToBaseUnitOptions {
   decimals?: number;
   fallback?: string;
+  roundingMode?: BigNumber.RoundingMode;
 }
 
+/**
+ * Converts a value from display units to base units.
+ * Returns an integer string representation.
+ * @param value - The value in display units
+ * @param options - Options including decimals, fallback value, and roundingMode
+ */
 export function toBaseUnit(
   value?: number | string | bigint | BigNumber,
   options?: ToBaseUnitOptions,
 ): string {
-  const { decimals = 0, fallback = "" } = options || {};
+  const {
+    decimals = 0,
+    fallback = "",
+    roundingMode = BigNumber.ROUND_DOWN,
+  } = options || {};
 
   const num = toBigNumber(value);
   if (!num) return fallback;
 
   const result = num.times(getPowerOf10(decimals));
-  return result.integerValue(BigNumber.ROUND_DOWN).toString();
+  return result.integerValue(roundingMode).toString();
 }
 
 interface FormatPercentOptions {
   dp?: number;
   fallback?: string;
+  roundingMode?: BigNumber.RoundingMode;
 }
 
+/**
+ * Formats a decimal value as a percentage.
+ * Multiplies by 100 and adds % suffix.
+ * Auto-adjusts decimal places: 0 for values >= 100%, 2 otherwise.
+ * @param value - The decimal value (e.g., 0.15 for 15%)
+ * @param options - Options including decimal places, fallback value, and roundingMode
+ */
 export function formatPercent(
   value?: number | string | bigint | BigNumber,
   options?: FormatPercentOptions,
 ): string {
-  const { dp, fallback = "" } = options || {};
+  const {
+    dp,
+    fallback = "",
+    roundingMode = BigNumber.ROUND_DOWN,
+  } = options || {};
 
   const num = toBigNumber(value);
   if (!num) return fallback;
@@ -150,5 +207,5 @@ export function formatPercent(
   const percentage = num.times(100);
   const decimalPlaces = dp !== undefined ? dp : percentage.gte(100) ? 0 : 2;
 
-  return `${percentage.toFixed(decimalPlaces, BigNumber.ROUND_DOWN)}%`;
+  return `${percentage.toFixed(decimalPlaces, roundingMode)}%`;
 }
