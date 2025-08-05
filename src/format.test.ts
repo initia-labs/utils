@@ -432,6 +432,12 @@ describe("toBaseUnit", () => {
       }),
     ).toBe("-1999999");
   });
+
+  it("handles large numbers with zero decimals", () => {
+    expect(toBaseUnit("988288776786168845847765", { decimals: 0 })).toBe(
+      "988288776786168845847765",
+    );
+  });
 });
 
 describe("formatPercent", () => {

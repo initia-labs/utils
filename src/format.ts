@@ -175,7 +175,7 @@ export function toBaseUnit(
   if (!num) return fallback;
 
   const result = num.times(getPowerOf10(decimals));
-  return result.integerValue(roundingMode).toString();
+  return result.integerValue(roundingMode).toFixed();
 }
 
 interface FormatPercentOptions {
