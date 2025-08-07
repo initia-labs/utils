@@ -46,6 +46,20 @@ function addCommas(value: string): string {
   return parts[1] ? `${integerPart}.${parts[1]}` : integerPart;
 }
 
+// Helper function to format with or without trailing zeros
+function formatWithPrecision(
+  num: BigNumber,
+  dp: number,
+  roundingMode: BigNumber.RoundingMode,
+  preserveTrailingZeros: boolean,
+): string {
+  if (preserveTrailingZeros) {
+    const fixed = num.toFixed(dp, roundingMode);
+    return addCommas(fixed);
+  }
+  return num.decimalPlaces(dp, roundingMode).toFormat();
+}
+
 /**
  * Formats a number with optional abbreviation (K, M, B, T) and decimal places.
  * @param value - The value to format
@@ -66,8 +80,11 @@ export function formatNumber(
   if (!num) return fallback;
   if (num.isZero()) return "0";
 
+  // Check if dp was explicitly provided to determine trailing zero preservation
+  const preserveTrailingZeros = options?.dp !== undefined;
+
   if (!abbr) {
-    return num.decimalPlaces(dp, roundingMode).toFormat();
+    return formatWithPrecision(num, dp, roundingMode, preserveTrailingZeros);
   }
 
   const absNum = num.abs();
@@ -81,7 +98,7 @@ export function formatNumber(
     }
   }
 
-  return num.decimalPlaces(dp, roundingMode).toFormat();
+  return formatWithPrecision(num, dp, roundingMode, preserveTrailingZeros);
 }
 
 /**
@@ -109,8 +126,12 @@ export function formatAmount(
   const result = num.div(getPowerOf10(decimals));
   const decimalPlaces = dp !== undefined ? dp : Math.min(decimals, 6);
 
-  // When dp is not specified and decimals > 0, preserve trailing zeros
-  if (dp === undefined && decimals > 0 && decimalPlaces > 0 && !abbr) {
+  // Determine if trailing zeros should be preserved
+  // - When dp is explicitly specified: always preserve
+  // - When decimals > 0 and not abbreviated: preserve
+  const preserveTrailingZeros = dp !== undefined || (decimals > 0 && !abbr);
+
+  if (!abbr && preserveTrailingZeros) {
     const fixed = result.toFixed(decimalPlaces, roundingMode);
     return addCommas(fixed);
   }
@@ -207,5 +228,7 @@ export function formatPercent(
   const percentage = num.times(100);
   const decimalPlaces = dp !== undefined ? dp : percentage.gte(100) ? 0 : 2;
 
+  // Percentages always use toFixed to maintain consistent decimal places
+  // This ensures "10.00%" instead of "10%" for better readability
   return `${percentage.toFixed(decimalPlaces, roundingMode)}%`;
 }
