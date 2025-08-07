@@ -38,6 +38,10 @@ formatNumber("1234.567"); // "1,234.56"
 formatNumber("1234.567", { dp: 3 }); // "1,234.567"
 formatNumber("1234.567", { dp: 0 }); // "1,234"
 
+// Trailing zeros are preserved when dp is explicitly specified
+formatNumber("46.6", { dp: 2 }); // "46.60"
+formatNumber("1000", { dp: 3 }); // "1,000.000"
+
 // With abbreviations
 formatNumber("1234", { abbr: true }); // "1.23K"
 formatNumber("1234567", { abbr: true }); // "1.23M"
@@ -48,12 +52,14 @@ formatNumber("1234567890123", { abbr: true }); // "1.23T"
 formatAmount("1000000", { decimals: 6 }); // "1.000000"
 formatAmount("1234567890", { decimals: 6 }); // "1,234.567890"
 formatAmount("1234567890", { decimals: 6, dp: 3 }); // "1,234.567"
+formatAmount("1000000000", { decimals: 6, dp: 3 }); // "1,000.000" (trailing zeros preserved)
 formatAmount("1234567890", { decimals: 6, abbr: true }); // "1.234567K"
 
 // Percentage formatting
 formatPercent("0.123"); // "12.30%"
 formatPercent("1.23"); // "123%"
 formatPercent("0.1234567", { dp: 3 }); // "12.345%"
+formatPercent("0.1", { dp: 2 }); // "10.00%" (trailing zeros preserved)
 
 // Handling invalid values with fallback
 formatNumber(undefined); // ""
@@ -229,31 +235,31 @@ Truncates a string, keeping the beginning and end.
 
 **formatNumber(value, options?)**
 
-Formats a number with thousands separators and decimal places.
+Formats a number with thousands separators and decimal places. When `dp` is explicitly specified, trailing zeros are preserved.
 
 - `value`: `number | string | bigint | BigNumber` - The value to format
-- `options.dp`: `number` - Decimal places (default: 2)
+- `options.dp`: `number` - Decimal places (default: 2). When specified, trailing zeros are preserved
 - `options.abbr`: `boolean` - Use abbreviations (K, M, B, T) (default: false)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 - `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 
 **formatAmount(value, options?)**
 
-Formats a blockchain amount, converting from base units to display units.
+Formats a blockchain amount, converting from base units to display units. When `dp` is explicitly specified, trailing zeros are preserved.
 
 - `value`: `number | string | bigint | BigNumber` - The value in base units
 - `options.decimals`: `number` - Token decimals (default: 0)
-- `options.dp`: `number` - Decimal places (default: min(decimals, 6))
+- `options.dp`: `number` - Decimal places (default: min(decimals, 6)). When specified, trailing zeros are preserved
 - `options.abbr`: `boolean` - Use abbreviations (default: false)
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 - `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 
 **formatPercent(value, options?)**
 
-Formats a decimal as a percentage.
+Formats a decimal as a percentage. When `dp` is explicitly specified, trailing zeros are preserved.
 
 - `value`: `number | string | bigint | BigNumber` - The decimal value (0.1 = 10%)
-- `options.dp`: `number` - Decimal places (default: 2 for <100%, 0 for ≥100%)
+- `options.dp`: `number` - Decimal places (default: 2 for <100%, 0 for ≥100%). When specified, trailing zeros are preserved
 - `options.fallback`: `string` - Value to return for invalid inputs (default: "")
 - `options.roundingMode`: `BigNumber.RoundingMode` - Rounding mode (default: BigNumber.ROUND_DOWN)
 

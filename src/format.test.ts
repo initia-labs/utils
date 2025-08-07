@@ -100,6 +100,21 @@ describe("formatNumber", () => {
     );
   });
 
+  it("preserves trailing zeros when dp is specified", () => {
+    expect(formatNumber("46.6", { dp: 2 })).toBe("46.60");
+    expect(formatNumber("1", { dp: 3 })).toBe("1.000");
+    expect(formatNumber("12.3", { dp: 4 })).toBe("12.3000");
+    expect(formatNumber("0.5", { dp: 2 })).toBe("0.50");
+    expect(formatNumber("100", { dp: 1 })).toBe("100.0");
+
+    // Test with numbers > 1000 (with comma separators)
+    expect(formatNumber("1234.5", { dp: 2 })).toBe("1,234.50");
+    expect(formatNumber("10000", { dp: 3 })).toBe("10,000.000");
+    expect(formatNumber("999999.9", { dp: 4 })).toBe("999,999.9000");
+    expect(formatNumber("1234567.89", { dp: 1 })).toBe("1,234,567.8"); // ROUND_DOWN by default
+    expect(formatNumber("1000000", { dp: 2 })).toBe("1,000,000.00");
+  });
+
   it("handles custom rounding modes", () => {
     // Default is ROUND_DOWN
     expect(formatNumber("1.236", { dp: 2 })).toBe("1.23");
@@ -225,6 +240,23 @@ describe("formatAmount", () => {
     ).toBe("1.234567M");
   });
 
+  it("preserves trailing zeros when dp is specified", () => {
+    expect(formatAmount("1234567890", { decimals: 6, dp: 2 })).toBe("1,234.56");
+    expect(formatAmount("1000000000", { decimals: 6, dp: 3 })).toBe(
+      "1,000.000",
+    );
+    expect(formatAmount("5500000", { decimals: 6, dp: 4 })).toBe("5.5000");
+    expect(formatAmount("123000000", { decimals: 6, dp: 1 })).toBe("123.0");
+
+    // Test with large amounts
+    expect(formatAmount("1234567890000000", { decimals: 6, dp: 2 })).toBe(
+      "1,234,567,890.00",
+    );
+    expect(formatAmount("999999999000000", { decimals: 6, dp: 5 })).toBe(
+      "999,999,999.00000",
+    );
+  });
+
   it("handles custom rounding modes", () => {
     // Default is ROUND_DOWN
     expect(formatAmount("1234567896", { decimals: 6, dp: 5 })).toBe(
@@ -238,7 +270,7 @@ describe("formatAmount", () => {
         dp: 5,
         roundingMode: BigNumber.ROUND_UP,
       }),
-    ).toBe("1,234.5679");
+    ).toBe("1,234.56790");
 
     // ROUND_HALF_UP
     expect(
@@ -247,7 +279,7 @@ describe("formatAmount", () => {
         dp: 5,
         roundingMode: BigNumber.ROUND_HALF_UP,
       }),
-    ).toBe("1,234.5679");
+    ).toBe("1,234.56790");
 
     // Works with auto-dp when not specified
     expect(
@@ -521,6 +553,20 @@ describe("formatPercent", () => {
     expect(formatPercent(BigInt(1))).toBe("100%");
     expect(formatPercent(BigInt(0))).toBe("0.00%");
     expect(formatPercent(BigInt(-1))).toBe("-100.00%");
+  });
+
+  it("preserves trailing zeros when dp is specified", () => {
+    expect(formatPercent("0.1", { dp: 2 })).toBe("10.00%");
+    expect(formatPercent("0.5", { dp: 3 })).toBe("50.000%");
+    expect(formatPercent("0.123", { dp: 4 })).toBe("12.3000%");
+    expect(formatPercent("1", { dp: 1 })).toBe("100.0%");
+    expect(formatPercent("0.466", { dp: 2 })).toBe("46.60%");
+
+    // Test with large percentages (> 100%)
+    expect(formatPercent("10", { dp: 2 })).toBe("1000.00%");
+    expect(formatPercent("12.345", { dp: 3 })).toBe("1234.500%");
+    expect(formatPercent("100", { dp: 1 })).toBe("10000.0%");
+    expect(formatPercent("999.99", { dp: 4 })).toBe("99999.0000%");
   });
 
   it("handles custom rounding modes", () => {
