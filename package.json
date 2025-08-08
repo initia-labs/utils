@@ -29,30 +29,32 @@
     "test": "vitest run",
     "prepare": "simple-git-hooks"
   },
-  "devDependencies": {
+  "dependencies": {
     "@cosmjs/encoding": "^0.34.0",
-    "@initia/eslint-config-react-app": "^1.1.0",
     "@mysten/bcs": "^1.7.0",
     "@noble/hashes": "^1.8.0",
-    "@tsconfig/recommended": "^1.0.10",
-    "@types/node": "^24.1.0",
     "bignumber.js": "^9.3.1",
-    "eslint": "^9.32.0",
-    "lint-staged": "^16.1.2",
+    "viem": "^2.33.3"
+  },
+  "devDependencies": {
+    "@initia/eslint-config-react-app": "^1.1.0",
+    "@tsconfig/recommended": "^1.0.10",
+    "@types/node": "^24.2.1",
+    "eslint": "^9.33.0",
+    "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
-    "simple-git-hooks": "^2.13.0",
-    "typescript": "^5.8.3",
-    "viem": "^2.33.1",
-    "vite": "^7.0.6",
+    "simple-git-hooks": "^2.13.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.1",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@cosmjs/encoding": "^0",
-    "@mysten/bcs": "^1",
-    "@noble/hashes": "^1",
-    "bignumber.js": "^9",
-    "viem": "^2"
+    "@cosmjs/encoding": ">=0.34.0",
+    "@mysten/bcs": ">=1.0.0",
+    "@noble/hashes": ">=1.0.0",
+    "bignumber.js": ">=9.0.0",
+    "viem": ">=2.0.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged --concurrent false"
