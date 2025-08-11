@@ -4,15 +4,11 @@
   "description": "A collection of utility functions",
   "license": "MIT",
   "repository": "github:initia-labs/utils",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     }
   },
   "files": [
@@ -23,7 +19,7 @@
     "tag": "alpha"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --fix",
     "test": "vitest run",
@@ -44,9 +40,8 @@
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
     "simple-git-hooks": "^2.13.1",
+    "tsup": "^8.5.0",
     "typescript": "^5.9.2",
-    "vite": "^7.1.1",
-    "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
