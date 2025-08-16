@@ -2,13 +2,12 @@ name: PR Checks
 
 on:
   pull_request:
-    branches: [main]
 
 permissions:
   contents: read
 
 jobs:
-  lint-and-format:
+  checks:
     runs-on: ubuntu-latest
 
     steps:
