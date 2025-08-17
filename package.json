@@ -24,6 +24,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --fix",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "@initia/eslint-config-react-app": "^1.1.0",
     "@tsconfig/recommended": "^1.0.10",
     "@types/node": "^24.2.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9.33.0",
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",

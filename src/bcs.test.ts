@@ -187,5 +187,19 @@ describe("BCS", () => {
         "9007199254740991.123456789012345678",
       );
     });
+
+    it("handles negative values in bigdecimal", () => {
+      // Test that negative values throw an error (negative BigNumber)
+      expect(() => {
+        bcs.bigdecimal().serialize("-123.456").toHex();
+      }).toThrow("negative values are not supported");
+    });
+
+    it("handles zero value in bigdecimal", () => {
+      // Test that zero value is properly encoded
+      const serialized = bcs.bigdecimal().serialize("0").toHex();
+      // Zero should be encoded as 01 (length 1) 00 (value 0)
+      expect(serialized).toBe("0100");
+    });
   });
 });
