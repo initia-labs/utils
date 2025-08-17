@@ -87,6 +87,23 @@ describe("object", () => {
     it("should throw error with empty denom", () => {
       expect(() => denomToMetadata("")).toThrow("Denom cannot be empty");
     });
+
+    it("should handle move/ prefixed denoms", () => {
+      const result = denomToMetadata(
+        "move/a662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+      );
+      expect(result).toBe(
+        "0xa662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+      );
+
+      // Test with leading zeros
+      const resultWithZeros = denomToMetadata(
+        "move/0a662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+      );
+      expect(resultWithZeros).toBe(
+        "0xa662fe5131dcbc531a95f866436e6f586622d1a4dbd03f02e95e9c5504ff467",
+      );
+    });
   });
 
   describe("getIbcDenom", () => {

@@ -170,4 +170,14 @@ describe("InitiaAddress", () => {
       ),
     ).toBe(true);
   });
+
+  it("should handle errors in equals static method when addresses cannot be created", () => {
+    // Test with invalid addresses that will throw errors during InitiaAddress creation
+    expect(
+      InitiaAddress.equals(
+        "invalid_address_that_will_throw",
+        "another_invalid_address",
+      ),
+    ).toBe(false);
+  });
 });
