@@ -24,6 +24,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --fix",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
