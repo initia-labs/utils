@@ -1,9 +1,10 @@
 {
   "name": "@initia/utils",
   "version": "2.0.0-alpha.5",
-  "description": "A collection of utility functions",
-  "license": "MIT",
+  "description": "TypeScript utility library for Interwoven applications",
+  "author": "Initia (https://initia.xyz)",
   "repository": "github:initia-labs/utils",
+  "license": "MIT",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

@@ -1,6 +1,23 @@
 # @initia/utils
 
-A TypeScript utility library for blockchain applications.
+TypeScript utility library for Interwoven applications
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Reference](#api-reference)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Features
+
+- **Number Formatting**: Number formatting with BigNumber.js for blockchain amounts
+- **Address Utilities**: Conversion between bech32 and hex address formats
+- **BCS Serialization**: Extended Binary Canonical Serialization for Move types
+- **Object Utilities**: Deterministic object address generation and IBC denom calculation
+- **Text Processing**: String truncation for UI display
 
 ## Installation
 
@@ -376,9 +393,9 @@ Removes leading zeros from a hex string while preserving the 0x prefix if presen
 - `hex`: `string` - The hex string to process
 - Returns: `string` - The hex string without leading zeros
 
-## Development
+## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 
