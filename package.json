@@ -1,6 +1,6 @@
 {
   "name": "@initia/utils",
-  "version": "2.0.0-alpha.5",
+  "version": "2.0.0-alpha.6",
   "description": "TypeScript utility library for Interwoven applications",
   "author": "Initia (https://initia.xyz)",
   "repository": "github:initia-labs/utils",
