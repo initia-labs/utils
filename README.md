@@ -198,6 +198,29 @@ const addressType = resolveBcsType("0x1::string::String"); // returns bcs.string
 const optionType = resolveBcsType("0x1::option::Option<u64>"); // returns bcs.option(bcs.u64())
 ```
 
+### Move Module Utilities
+
+```typescript
+import { createMoveClient } from "@initia/utils";
+
+// Create a Move client with REST URL
+const moveClient = createMoveClient("https://rest.initia.xyz");
+
+// Query Move module view functions with type safety
+interface UserData {
+  name: string;
+  balance: string;
+}
+
+const result = await moveClient.viewFunction<UserData>({
+  moduleAddress: "0x1",
+  moduleName: "module_name",
+  functionName: "function_name",
+  typeArgs: [], // optional, defaults to []
+  args: ["arg1", "arg2"], // optional, defaults to []
+});
+```
+
 ### Object Utilities
 
 ```typescript
@@ -352,6 +375,28 @@ Resolves Move-style type strings to BCS types.
 
 - `typeStr`: `string` - Move type string (e.g., "0x1::string::String")
 - Returns: `BcsType` - Corresponding BCS type
+
+### Move Module Utilities
+
+**createMoveClient(restUrl)**
+
+Creates a Move client instance for querying view functions.
+
+- `restUrl`: `string` - The REST API base URL
+- Returns: `MoveClient` - A client instance with methods for querying Move modules
+
+**MoveClient.viewFunction(params)**
+
+Queries Move module view functions via REST API.
+
+- `params.moduleAddress`: `string` - The Move module address
+- `params.moduleName`: `string` - The Move module name
+- `params.functionName`: `string` - The view function name
+- `params.typeArgs`: `string[]` - Type arguments (optional, default: [])
+- `params.args`: `string[]` - Function arguments (optional, default: [])
+- Returns: `Promise<T>` - The parsed response data
+- Throws: `Error` - If the response contains an error message
+- Throws: `HTTPError` - If the HTTP request fails (original ky error)
 
 ### Object Utilities
 
