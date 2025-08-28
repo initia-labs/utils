@@ -293,21 +293,21 @@ describe("formatAmount", () => {
 
 describe("fromBaseUnit", () => {
   it("converts from base unit", () => {
-    expect(fromBaseUnit("1234567890", { decimals: 6 })).toBe("1234.567890");
+    expect(fromBaseUnit("1234567890", { decimals: 6 })).toBe("1234.56789");
     expect(fromBaseUnit("1234567890", { decimals: 0 })).toBe("1234567890");
-    expect(fromBaseUnit("1000000", { decimals: 6 })).toBe("1.000000");
+    expect(fromBaseUnit("1000000", { decimals: 6 })).toBe("1");
   });
 
   it("handles negative values", () => {
-    expect(fromBaseUnit("-1234567890", { decimals: 6 })).toBe("-1234.567890");
-    expect(fromBaseUnit("-1000000", { decimals: 6 })).toBe("-1.000000");
+    expect(fromBaseUnit("-1234567890", { decimals: 6 })).toBe("-1234.56789");
+    expect(fromBaseUnit("-1000000", { decimals: 6 })).toBe("-1");
   });
 
   it("limits decimal places", () => {
     expect(fromBaseUnit("1234567890123456789", { decimals: 18 })).toBe(
       "1.234567",
     );
-    expect(fromBaseUnit("1", { decimals: 10 })).toBe("0.000000");
+    expect(fromBaseUnit("1", { decimals: 10 })).toBe("0");
   });
 
   it("handles invalid values", () => {
@@ -331,9 +331,9 @@ describe("fromBaseUnit", () => {
 
   it("handles bigint values", () => {
     expect(fromBaseUnit(BigInt("1234567890"), { decimals: 6 })).toBe(
-      "1234.567890",
+      "1234.56789",
     );
-    expect(fromBaseUnit(BigInt("-1000000"), { decimals: 6 })).toBe("-1.000000");
+    expect(fromBaseUnit(BigInt("-1000000"), { decimals: 6 })).toBe("-1");
     expect(fromBaseUnit(BigInt("1234567890123456789"), { decimals: 18 })).toBe(
       "1.234567",
     );
@@ -343,7 +343,7 @@ describe("fromBaseUnit", () => {
     // Default is ROUND_DOWN
     expect(fromBaseUnit("1234567896", { decimals: 6 })).toBe("1234.567896");
 
-    // ROUND_UP (note: toFixed with limited decimals)
+    // ROUND_UP (note: limited to max 6 decimals)
     expect(
       fromBaseUnit("1234567896123456789", {
         decimals: 18,

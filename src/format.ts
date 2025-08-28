@@ -147,7 +147,7 @@ interface FromBaseUnitOptions {
 
 /**
  * Converts a value from base units to display units.
- * Always returns a fixed decimal string without abbreviation.
+ * Returns a string without trailing zeros.
  * @param value - The value in base units
  * @param options - Options including decimals, fallback value, and roundingMode
  */
@@ -167,7 +167,9 @@ export function fromBaseUnit(
   const result = num.div(getPowerOf10(decimals));
   const decimalPlaces = Math.min(decimals, 6);
 
-  return result.toFixed(decimalPlaces, roundingMode);
+  // Remove trailing zeros as this function is for conversion, not formatting
+  // Formatting with preserved trailing zeros should use formatAmount() instead
+  return result.decimalPlaces(decimalPlaces, roundingMode).toFixed();
 }
 
 interface ToBaseUnitOptions {
@@ -178,7 +180,7 @@ interface ToBaseUnitOptions {
 
 /**
  * Converts a value from display units to base units.
- * Returns an integer string representation.
+ * Always returns an integer string representation as blockchain doesn't support fractional amounts.
  * @param value - The value in display units
  * @param options - Options including decimals, fallback value, and roundingMode
  */
@@ -196,6 +198,7 @@ export function toBaseUnit(
   if (!num) return fallback;
 
   const result = num.times(getPowerOf10(decimals));
+  // Always return an integer as blockchain doesn't support fractional amounts
   return result.integerValue(roundingMode).toFixed();
 }
 

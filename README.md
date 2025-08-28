@@ -95,10 +95,10 @@ formatNumber("1.235", { dp: 2, roundingMode: BigNumber.ROUND_HALF_UP }); // "1.2
 ```typescript
 import { toBaseUnit, fromBaseUnit } from "@initia/utils";
 
-// Convert base units to display amount
-fromBaseUnit("1500000", { decimals: 6 }); // "1.500000"
+// Convert base units to display amount (removes trailing zeros)
+fromBaseUnit("1500000", { decimals: 6 }); // "1.5"
 fromBaseUnit("1", { decimals: 6 }); // "0.000001"
-fromBaseUnit("1234567890", { decimals: 6 }); // "1234.567890"
+fromBaseUnit("1234567890", { decimals: 6 }); // "1234.56789"
 
 // Convert display amount to base units
 toBaseUnit("1.5", { decimals: 6 }); // "1500000"
@@ -316,7 +316,7 @@ Converts a display amount to base units.
 
 **fromBaseUnit(value, options?)**
 
-Converts base units to a display amount.
+Converts base units to a display amount with trailing zeros removed.
 
 - `value`: `number | string | bigint | BigNumber` - The amount in base units
 - `options.decimals`: `number` - Token decimals (default: 0)
